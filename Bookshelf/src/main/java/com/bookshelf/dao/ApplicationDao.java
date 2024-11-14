@@ -1,5 +1,6 @@
 package com.bookshelf.dao;
 
+import java.sql.Timestamp;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -63,6 +64,7 @@ public class ApplicationDao {
                         + "genre_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, "
                         + "genre_name VARCHAR(45) NOT NULL UNIQUE)";
                 stmt.executeUpdate(sql);
+                insertDefaultGenre(conn);// insert default genres
                 System.out.println("Created Genre Table");
             }
         } catch (SQLException e) {
@@ -84,7 +86,7 @@ public class ApplicationDao {
                         + "role_name VARCHAR(25) NOT NULL UNIQUE, "
                         + "description VARCHAR(255) DEFAULT NULL)";
                 stmt.executeUpdate(sql);
-                insertDefaultRoles(conn);
+                insertDefaultRoles(conn); // insert default roles
                 System.out.println("Created Role Table");
             }
         } catch (SQLException e) {
@@ -109,6 +111,7 @@ public class ApplicationDao {
                         + "country VARCHAR(10), "
                         + "postal_code VARCHAR(6))";
                 stmt.executeUpdate(sql);
+                insertDefaultAddress(conn); // insert default addresses
                 System.out.println("Created Address Table");
             }
         } catch (SQLException e) {
@@ -210,6 +213,7 @@ public class ApplicationDao {
                         + "genre_id INT NOT NULL, "
                         + "FOREIGN KEY (genre_id) REFERENCES " + GENRE_TABLE + "(genre_id) ON DELETE CASCADE)";
                 stmt.executeUpdate(sql);
+                insertDefaultBook(conn); // insert default books
                 System.out.println("Created Books Table");
             }
         } catch (SQLException e) {
@@ -236,6 +240,7 @@ public class ApplicationDao {
                         + "FOREIGN KEY (librarian_id) REFERENCES " + USERS_TABLE + "(user_id) ON DELETE SET NULL, "
                         + "FOREIGN KEY (library_address_id) REFERENCES " + ADDRESS_TABLE + "(address_id) ON DELETE SET NULL)";
                 stmt.executeUpdate(sql);
+                insertDefaultLibrary(conn); //insert default libraries
                 System.out.println("Created Library Table");
             }
         } catch (SQLException e) {
@@ -261,6 +266,7 @@ public class ApplicationDao {
                         + "FOREIGN KEY (library_id) REFERENCES " + LIBRARY_TABLE + "(library_id) ON DELETE CASCADE, "
                         + "FOREIGN KEY (book_id) REFERENCES " + BOOKS_TABLE + "(book_id) ON DELETE CASCADE)";
                 stmt.executeUpdate(sql);
+                insertDefaultLibraryBook(conn);
                 System.out.println("Created LibraryBook Table");
             }
         } catch (SQLException e) {
@@ -296,6 +302,9 @@ public class ApplicationDao {
             e.printStackTrace();
         }
     }
+    
+    /* Insert Default Data */
+    
     // Default Role data
     private void insertDefaultRoles(Connection conn) throws SQLException {
         String checkRoleSql = "SELECT COUNT(*) FROM " + ROLES_TABLE + " WHERE role_name = ?";
@@ -328,8 +337,268 @@ public class ApplicationDao {
             }
         }
     }
+    
+    // Default Genre data
+    private void insertDefaultGenre(Connection conn) throws SQLException {
+    	String checkGenreSql = "SELECT COUNT(*) FROM " + GENRE_TABLE + " WHERE genre_name = ?";
+        String insertGenreSql = "INSERT INTO " + GENRE_TABLE + " (genre_name) VALUES (?)";
+
+        try (
+        	PreparedStatement checkStmt = conn.prepareStatement(checkGenreSql);
+            PreparedStatement insertStmt = conn.prepareStatement(insertGenreSql);
+        ) {
+
+            String[] defaultGenres = {
+            		"adventure",
+            	    "cookbook",
+            	    "economics",
+            	    "fantasy",
+            	    "health",
+            	    "history",
+            	    "horror",
+            	    "mystery",
+            	    "novel",
+            	    "romance",
+            	    "science",
+            	    "science fiction",
+            	    "thriller",
+            	    "travel",
+            	    "memoir"
+                };
+
+            for (String genre_name : defaultGenres) {
+            	checkStmt.setString(1, genre_name);
+                try (ResultSet rs = checkStmt.executeQuery()) {
+                    if (rs.next() && rs.getInt(1) == 0) {
+                        // Role does not exist; Insert default genres
+                        insertStmt.setString(1, genre_name);
+                        insertStmt.executeUpdate();
+
+                    }
+                }
+            }
+        }
+    }
+    // Default Book data
+    private void insertDefaultBook(Connection conn) throws SQLException {
+    	String checkISBNSql = "SELECT COUNT(*) FROM " + BOOKS_TABLE + " WHERE isbn = ?";
+        String insertBookSql = "INSERT INTO " + BOOKS_TABLE + " (book_id, title, author, isbn, published_year, genre_id) VALUES (?,?,?,?,?,?)";
+
+        try (
+        	PreparedStatement checkStmt = conn.prepareStatement(checkISBNSql);
+            PreparedStatement insertStmt = conn.prepareStatement(insertBookSql);
+        ) {
+
+        	String[][] defaultBooks = {
+        			{"6369172f-9b5c-429c-b734-bed65324e2e8","The Notebook","Nicholas Sparks","9780446676090","1996","10"},
+        			{"c9527ca4-684b-42e0-b95d-2d193cf25d01","Me Before You","Jojo Moyes","9780143124541","2012","10"},
+        			{"044d6fac-ac31-4b1f-b5a3-9169b767f5a4","It Ends with Us","Colleen Hoover","9781501110368","2016","10"},
+        			{"ab5bf3e8-ba18-42d6-92e7-53c903d072e1","Project Hail Mary","Andy Weir","9780593135204","2021","12"},
+        			{"dcc71670-c472-4840-988f-725dc6018140","The Ministry for the Future","Kim Stanley Robinson","9780316300131","2020","12"},
+        			{"cb5d09ef-5692-4faa-a425-01f826003c93","To Sleep in a Sea of Stars","Christopher Paolini","9781250762849","2020","12"},
+        			{"9c7fa7ec-8e67-4d0d-8de7-b15fea48561b","Goliath","Tochi Onyebuchi","9781250782953","2022","12"},
+        			{"9be2892f-9bd1-45cb-84b9-b76372057668","Humankind: A Hopeful History","Rutger Bregman","9780316418539","2020","6"},
+        			{"143ea9e6-c077-4114-8afa-dd992daf8649","The Dawn of Everything: A New History of Humanity","David Graeber and David Wengrow","9780374157357","2021","6"},
+        			{"5fb2411c-0278-44a5-a74d-ecf149c92e26","Into the Wild","Jon Krakauer","9780385486804","1996","1"},
+        			{"9e2fc376-e597-44f6-a2d5-ffb8400052ba","Salt, Fat, Acid, Heat: Mastering the Elements of Good Cooking","Samin Nosrat","9781476753836","2017","2"},
+        			{"509a189a-7cae-47e1-a9b1-eb6f2a38bc7d","Capital in the Twenty-First Century","Thomas Piketty","9780674430006","2013","3"},
+        			{"8262f5b7-9bb5-4ccf-a8d0-c458e3526496","A Game of Thrones (A Song of Ice and Fire, Book 1)","George R.R. Martin","9780553103540","1996","4"},
+        			{"7c022414-7bb2-4790-b3fe-d1424a1880d0","Sapiens: A Brief History of Humankind","Yuval Noah Harari","9780062316097","2011","6"},
+        			{"c69b7843-028f-4e42-917b-e04f54eb5e47","The Shining","Stephen King","9780385121675","1977","7"},
+        			{"b2f7283a-c369-41c9-8fe2-4095f82b3dd6","The Girl with the Dragon Tattoo","Stieg Larsson","9780307269751","2005","8"},
+        			{"39a90f56-6945-45f2-a6f4-b48589642b93","To Kill a Mockingbird","Harper Lee","9780061120084","1960","9"},
+        			{"5c7c8d72-93dd-4ccd-9634-719f3e1b82f5","A Brief History of Time","Stephen Hawking","9780553380163","1988","11"},
+        			{"87580f51-c3ef-4f67-a1cc-a4a1eb07578f","Gone Girl","Gillian Flynn","9780307588371","2012","13"},
+        			{"6529e05a-43ec-4397-ab60-6aa1f93fb4ca","Harry Potter and the Sorcerer's Stone (first book)","J.K. Rowling","9780439708180","1997","4"},
+        			{"81c8650d-7e29-44b0-91c3-99b7325903d8","Pretty Little Liars (first book)","Sara Shepard","9780060887322","2006","8"},
+        			{"ac06cc43-35d2-4249-9405-c70a5c615271","And Then There Were None","Agatha Christie","9780062073488","1939","13"},
+        			{"b12edf9e-dc81-4c5f-bab1-be73e7591616","All the Beauty in the World: The Metropolitan Museum of Art and Me ","Patrick Bringley","9781982163307","2023","15"},
+                };
+
+        	for (String[] book : defaultBooks) {
+                // Check if book already exists
+                checkStmt.setString(1, book[3]);
+                try (ResultSet rs = checkStmt.executeQuery()) {
+                    if (rs.next() && rs.getInt(1) == 0) {
+                        // Book does not exist; Insert default books
+                        insertStmt.setString(1, book[0]); // book_id
+                        insertStmt.setString(2, book[1]); // title
+                        insertStmt.setString(3, book[2]); // author
+                        insertStmt.setString(4, book[3]); // isbn
+                        insertStmt.setString(5, book[4]); // published_year
+                        insertStmt.setInt(6, Integer.parseInt(book[5])); // genre_id
+                        System.out.println("Inserted default book: " + book[1]);
+                                            
+                        
+                        insertStmt.executeUpdate();
+
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            // Log or print the error message for debugging
+            System.err.println("Error while inserting book: " + e.getMessage());
+            throw e;  // Re-throw the exception to handle it further up the stack
+        }
+
+    }
+    
+    // Default Address data for Libarary
+    private void insertDefaultAddress(Connection conn) throws SQLException {
+    	String checkAddressSql = "SELECT COUNT(*) FROM " + ADDRESS_TABLE + " WHERE address_id = ?";
+        String insertAddressSql = "INSERT INTO " + ADDRESS_TABLE + " (Address_id, address, city, province, country, postal_code) VALUES (?,?,?,?,?,?)";
+
+        try (
+        	PreparedStatement checkStmt = conn.prepareStatement(checkAddressSql);
+            PreparedStatement insertStmt = conn.prepareStatement(insertAddressSql);
+        ) {
+
+        	String[][] defaultAddresses = {
+        			{"8c167ec7-4227-4d8d-8af5-0bc47a801ee2","123 Spark Street","Ottawa","ON","CA","K1PP1K"},
+        			{"6db79129-b19e-4c47-972c-edbd0ae38fb2","45 Avenue","Toronto","ON","CA","M5JJ5M"},
+        			{"e1cd2ea2-63a4-485f-8610-02b480967ba1","6 King Street","Kitchener","ON","CA","N2GG2N"},
+        			{"46fd24c2-ddec-46e7-9ce7-5e463f8ccb2f","78 Oxford Street","London","ON","CA","N5VV5N"},
+        			{"629c8672-6afb-4319-b425-fcdf24e6d47f","9 Adam Drive","Barrie","ON","CA","L4MM4L"},
+        			
+                };
+
+        	for (String[] address : defaultAddresses) {
+                // Check if address already exists
+                checkStmt.setString(1, address[0]);
+                try (ResultSet rs = checkStmt.executeQuery()) {
+                    if (rs.next() && rs.getInt(1) == 0) {
+                        // Address does not exist; Insert default address
+                        insertStmt.setString(1, address[0]); // address_id
+                        insertStmt.setString(2, address[1]); // address
+                        insertStmt.setString(3, address[2]); // city
+                        insertStmt.setString(4, address[3]); // province
+                        insertStmt.setString(5, address[4]); // country
+                        insertStmt.setString(6, address[5]); // postal_code
+                                            
+                        
+                        insertStmt.executeUpdate();
 
 
+
+                    }
+                }
+            }
+        }
+    }
+  
+    
+ // Default Library data
+    private void insertDefaultLibrary(Connection conn) throws SQLException {
+    	String checkLibrarySql = "SELECT COUNT(*) FROM " + LIBRARY_TABLE + " WHERE library_name = ?";
+        String insertLibrarySql = "INSERT INTO " + LIBRARY_TABLE + " (library_id, library_name, library_address_id, library_email, library_phone) VALUES (?,?,?,?,?)";
+
+        try (
+        	PreparedStatement checkStmt = conn.prepareStatement(checkLibrarySql);
+            PreparedStatement insertStmt = conn.prepareStatement(insertLibrarySql);
+        ) {
+
+        	String[][] defaultLibraries = {
+        			{"8b1b621c-c3f6-4e8a-b0fb-5a75dc4bcb73","Ottawa Library","8c167ec7-4227-4d8d-8af5-0bc47a801ee2"," ottawa.libarary@email.com ","613-123-4567"},
+        			{"1ac48991-dc33-495f-a80e-e7bc098d7e83","Toronto Library","6db79129-b19e-4c47-972c-edbd0ae38fb2","toronto.libarary@email.com",null},
+        			{"046476ec-24ec-49c7-b8d4-02cb63d11af7","Kitchener Library","e1cd2ea2-63a4-485f-8610-02b480967ba1","kitchener.library@email.com", null},
+        			{"d634c1d1-ac45-46cb-8e6b-2eda466ec305","London Library","46fd24c2-ddec-46e7-9ce7-5e463f8ccb2f","london.library@email.com","516-789-0000"},
+        			{"a8bf7002-81cb-4a74-a065-002d93fc8e92","Barrie Library","629c8672-6afb-4319-b425-fcdf24e6d47f","barrie.libarary@email.com","705-432-1234"},
+        			
+                };
+
+        	for (String[] library : defaultLibraries) {
+                // Check if library already exists
+                checkStmt.setString(1, library[1]);
+                try (ResultSet rs = checkStmt.executeQuery()) {
+                    if (rs.next() && rs.getInt(1) == 0) {
+                        // library does not exist; Insert default library
+                        insertStmt.setString(1, library[0]); // library_id
+                        insertStmt.setString(2, library[1]); // library_name
+                        insertStmt.setString(3, library[2]); // library_address_id
+                        insertStmt.setString(4, library[3]); // library_email
+                        insertStmt.setString(5, library[4]); // library_phone
+                                                                        
+                        insertStmt.executeUpdate();
+
+
+
+                    }
+                }
+            }
+        }
+    }
+    
+    
+    // Default Library Book data
+    private void insertDefaultLibraryBook(Connection conn) throws SQLException {
+    	String checkLibraryBookSql = "SELECT COUNT(*) FROM " + LIBRARY_BOOK_TABLE + " WHERE library_id = ? AND book_id= ? ";
+        String insertLibraryBookSql = "INSERT INTO " + LIBRARY_BOOK_TABLE + " (library_book_id, library_id, book_id, added_date, is_available) VALUES (?,?,?,?,?)";
+
+        try (
+        	PreparedStatement checkStmt = conn.prepareStatement(checkLibraryBookSql);
+            PreparedStatement insertStmt = conn.prepareStatement(insertLibraryBookSql);
+        ) {
+
+        	String[][] defaultLibraryBooks = {
+        			{"535f8cfa-540c-4d86-949c-375fbc9b45a2", "8b1b621c-c3f6-4e8a-b0fb-5a75dc4bcb73", "7c022414-7bb2-4790-b3fe-d1424a1880d0","true"}, //Ottawa Library Inventory
+        			{"c71b0221-7017-4c3e-bbee-71ca1cb79069", "8b1b621c-c3f6-4e8a-b0fb-5a75dc4bcb73", "9e2fc376-e597-44f6-a2d5-ffb8400052ba","false"},
+        			{"b7ee9148-59bb-46b8-8720-c811c2eca610", "8b1b621c-c3f6-4e8a-b0fb-5a75dc4bcb73", "6369172f-9b5c-429c-b734-bed65324e2e8","true"},
+        			{"e70beaf1-eff2-46cb-9770-0d9d9509cd86", "8b1b621c-c3f6-4e8a-b0fb-5a75dc4bcb73", "c9527ca4-684b-42e0-b95d-2d193cf25d01","true"},
+        			{"ba605c1e-dc59-4234-96cd-ddc69f5efb5f", "8b1b621c-c3f6-4e8a-b0fb-5a75dc4bcb73", "9be2892f-9bd1-45cb-84b9-b76372057668","false"},
+        			{"b8115c45-92eb-4114-845f-e43399ec1982", "8b1b621c-c3f6-4e8a-b0fb-5a75dc4bcb73", "b12edf9e-dc81-4c5f-bab1-be73e7591616","true"},
+        			{"880964ba-6357-43fd-9c54-cb26b8d1b925", "1ac48991-dc33-495f-a80e-e7bc098d7e83", "143ea9e6-c077-4114-8afa-dd992daf8649","false"},//Toronto Library Inventory
+        			{"c11f0b93-fa20-430e-a895-90ad26d98051", "1ac48991-dc33-495f-a80e-e7bc098d7e83", "6369172f-9b5c-429c-b734-bed65324e2e8","true"},
+        			{"19583954-b61f-48dd-90bc-3a91a9e8d66d", "1ac48991-dc33-495f-a80e-e7bc098d7e83", "ac06cc43-35d2-4249-9405-c70a5c615271","ture"},
+        			{"88d7f4b1-6637-4cdd-b77c-7fa455d4dcf2", "1ac48991-dc33-495f-a80e-e7bc098d7e83", "044d6fac-ac31-4b1f-b5a3-9169b767f5a4","ture"},
+        			{"f044d87e-d40c-4c92-9b3f-6f6e028334f2", "1ac48991-dc33-495f-a80e-e7bc098d7e83", "5fb2411c-0278-44a5-a74d-ecf149c92e26","false"},
+        			{"5b71a231-c745-4ced-9fb4-3467956a30d8", "1ac48991-dc33-495f-a80e-e7bc098d7e83", "8262f5b7-9bb5-4ccf-a8d0-c458e3526496","true"},
+        			{"4bcc4e3c-3ca9-4871-b352-e56781601c6a", "1ac48991-dc33-495f-a80e-e7bc098d7e83", "b12edf9e-dc81-4c5f-bab1-be73e7591616","false"},
+        			{"207d23b8-1631-4723-ad0b-6bad2e73135b", "046476ec-24ec-49c7-b8d4-02cb63d11af7", "7c022414-7bb2-4790-b3fe-d1424a1880d0","false"},//Kitchener Library Inventory
+        			{"5bfcab69-9498-4332-9d09-62fe59a63550", "046476ec-24ec-49c7-b8d4-02cb63d11af7", "143ea9e6-c077-4114-8afa-dd992daf8649","true"},
+        			{"d1760e19-b957-4191-99d5-c3ae6a5bdee2", "046476ec-24ec-49c7-b8d4-02cb63d11af7", "c9527ca4-684b-42e0-b95d-2d193cf25d01","true"},
+        			{"d37bf0cf-0a9c-4099-bfa9-b4b838ae1a26", "046476ec-24ec-49c7-b8d4-02cb63d11af7", "9be2892f-9bd1-45cb-84b9-b76372057668","false"},
+        			{"81812f26-26fb-47e3-9722-dfeeba28c45d", "046476ec-24ec-49c7-b8d4-02cb63d11af7", "8262f5b7-9bb5-4ccf-a8d0-c458e3526496","true"},
+        			{"0d24070d-1c16-4cce-8c91-d24425bcbbfd", "046476ec-24ec-49c7-b8d4-02cb63d11af7", "b12edf9e-dc81-4c5f-bab1-be73e7591616","true"},
+        			{"99353241-15da-4ac2-8fdd-2845d3508d28", "d634c1d1-ac45-46cb-8e6b-2eda466ec305", "9e2fc376-e597-44f6-a2d5-ffb8400052ba","true"},//London Library Inventory
+        			{"d4f3f9e7-151f-4d4c-9696-9e658aab3ce4", "d634c1d1-ac45-46cb-8e6b-2eda466ec305", "6369172f-9b5c-429c-b734-bed65324e2e8","true"},
+        			{"b5682be0-8c72-4722-a206-96c9677ab791", "d634c1d1-ac45-46cb-8e6b-2eda466ec305", "044d6fac-ac31-4b1f-b5a3-9169b767f5a4","true"},
+        			{"ac7ffcbc-ba83-4bc6-b0e9-c8c42d7eb66e", "d634c1d1-ac45-46cb-8e6b-2eda466ec305", "5fb2411c-0278-44a5-a74d-ecf149c92e26","false"},
+        			{"aeeeec04-ccb6-4d98-b4e7-8721e87d9d4e", "d634c1d1-ac45-46cb-8e6b-2eda466ec305", "9c7fa7ec-8e67-4d0d-8de7-b15fea48561b","false"},
+        			{"fd9ee4ca-9127-417c-a01a-c1da2e2a8d92", "a8bf7002-81cb-4a74-a065-002d93fc8e92", "7c022414-7bb2-4790-b3fe-d1424a1880d0","false"},//Barrie Library Inventory
+        			{"c2ee7b85-c599-42b9-8cfc-216f77d40233", "a8bf7002-81cb-4a74-a065-002d93fc8e92", "9e2fc376-e597-44f6-a2d5-ffb8400052ba","true"},
+        			{"bce81799-76fa-473a-a805-6f8547ba8c39", "a8bf7002-81cb-4a74-a065-002d93fc8e92", "ac06cc43-35d2-4249-9405-c70a5c615271","false"},
+        			{"263cbf6a-dbc5-4cc0-92af-ada51da85cf8", "a8bf7002-81cb-4a74-a065-002d93fc8e92", "9be2892f-9bd1-45cb-84b9-b76372057668","true"},
+        			{"a365f9c6-2d0b-4132-b2b2-98488d4ce852", "a8bf7002-81cb-4a74-a065-002d93fc8e92", "39a90f56-6945-45f2-a6f4-b48589642b93","true"},
+                };
+
+        	for (String[] libraryBook : defaultLibraryBooks) {
+                // Check if book already exists in the library inventory
+                checkStmt.setString(1, libraryBook[1]);
+                checkStmt.setString(2, libraryBook[2]);
+                try (ResultSet rs = checkStmt.executeQuery()) {
+                    if (rs.next() && rs.getInt(1) == 0) {
+                        // book does not exists in the library, Insert default library book
+                        insertStmt.setString(1, libraryBook[0]); // library_book_id
+                        insertStmt.setString(2, libraryBook[1]); // library_id
+                        insertStmt.setString(3, libraryBook[2]); // book_id
+
+                        Timestamp added_date = new Timestamp(System.currentTimeMillis());
+                        insertStmt.setTimestamp(4, added_date);
+                        boolean isAvailable = Boolean.parseBoolean(libraryBook[3]);
+                        insertStmt.setBoolean(5, isAvailable);; // is_available
+                                                                        
+                        insertStmt.executeUpdate();
+
+
+
+                    }
+                }
+            }
+        }
+    }
+    
+    
+    
     private static boolean dbExists(String dbName, ResultSet resultSet) throws SQLException {
         while (resultSet.next()) {
             if (resultSet.getString(1).equals(dbName)) return true;
