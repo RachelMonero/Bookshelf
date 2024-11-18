@@ -8,9 +8,9 @@ import com.bookshelf.dao.ApplicationDao;
 import com.bookshelf.libs.DBType;
 
 public class DBUtil {
-    private static final String USERNAME = "bookshelf_admin";
-    private static final String PASSWORD = "admin_123";
-    private static String M_CONN_STRING = "jdbc:mysql://localhost/";
+    private static final String USERNAME = "root";
+    private static final String PASSWORD = "";
+    private static String M_CONN_STRING = "jdbc:mysql://localhost:3306/";
     private static String H_CONN_STRING = "jdbc:hsqldb://localhost/";
 
     public static Connection getConnection(DBType dbType) throws SQLException, ClassNotFoundException {

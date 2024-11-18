@@ -7,10 +7,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.bookshelf.beans.User;
 import com.bookshelf.dao.AddressDao;
 import com.bookshelf.dao.RoleDao;
 import com.bookshelf.dao.UserDao;
 import com.bookshelf.dao.UserRoleDao;
+import com.bookshelf.libs.TokenGenerator;
+import com.bookshelf.services.JavaEmailService;
 
 @WebServlet("/register")
 public class RegisterServlet extends HttpServlet {
@@ -43,7 +46,7 @@ public class RegisterServlet extends HttpServlet {
 
         // User role
         String user_role = request.getParameter("user_role");
-        System.out.print("User Role:"+user_role);
+        System.out.print("User Role: " + user_role);
 
         try {
             // Validation for email input
@@ -67,26 +70,32 @@ public class RegisterServlet extends HttpServlet {
                 request.getRequestDispatcher("register.jsp").forward(request, response);
                 return;
             }
-            
-	        // Need to add all input validation. None of input should be null.*
+
+            // Need to add all input validation. None of input should be null.
 
             // Create address and retrieve address_id
             String address_id = AddressDao.add_address(address, city, province, country, postal_code);
             if (address_id != null) {
                 // Create user and retrieve user_id
                 String user_id = UserDao.createUser(email, username, password, first_name, last_name, address_id);
+                User user = new User(user_id, first_name, last_name, false);
+
+                // Verification Token Generator
+                String token = TokenGenerator.generatedToken();
+                UserDao.saveVerificationToken(user_id, token);
+
+                // Send verification email
+                JavaEmailService emailService = new JavaEmailService();
+                String verificationLink = "http://localhost:8080/Bookshelf/verifyServlet?verification_code=" + token;
+                emailService.sendVerificationEmail(email, verificationLink);
 
                 // Find role_id by name
                 String role_id = RoleDao.findRoleIdByName(user_role);
 
                 // Assign role to user as pending status
                 UserRoleDao.assign_role(user_id, role_id);
-                
-                /* user verification is required. (create verification code, send link to user's email)
-	    		 *  After verification is completed, need to update the status of user_role to Active.
-	    		 */
-	    		
-	            request.setAttribute("message", "User registered successfully.");
+
+                request.setAttribute("message", "User registered successfully.");
 
                 // Redirect to login page after successful registration
                 response.sendRedirect("index.jsp");

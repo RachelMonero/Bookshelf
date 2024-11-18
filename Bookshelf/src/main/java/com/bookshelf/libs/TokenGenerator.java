@@ -19,7 +19,7 @@ public class TokenGenerator {
 		return instance;
 	}
 
-	public String generatedToken() {
+	public static String generatedToken() {
 	    byte[] randomBytes = new byte[6];
 	    secureRandom.nextBytes(randomBytes);
 	    return base64Encoder.encodeToString(randomBytes);
