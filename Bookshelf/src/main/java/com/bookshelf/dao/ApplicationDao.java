@@ -180,7 +180,7 @@ public class ApplicationDao {
             if (!tableExists(conn, VERIFICATION_TABLE)) {
                 System.out.print("Creating Verification Table...");
                 String sql = "CREATE TABLE IF NOT EXISTS " + VERIFICATION_TABLE + " ("
-                        + "verification_id VARCHAR(36) NOT NULL PRIMARY KEY, "
+                        + "verification_id VARCHAR(36) NOT NULL DEFAULT (UUID()) PRIMARY KEY, "
                         + "user_id VARCHAR(36) NOT NULL, "
                         + "verification_type VARCHAR(20) NOT NULL, "
                         + "verification_code VARCHAR(36) NOT NULL, "

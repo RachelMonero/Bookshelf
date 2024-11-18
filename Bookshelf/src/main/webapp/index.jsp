@@ -14,11 +14,10 @@
                     <h1>Welcome to Bookshelf</h1>
                     <p>Discover and organize your literary journey.</p>
                     <h4 class="employee-info">New Employee? Contact <a href="mailto:example@algonquin.com" style="color: white; text-decoration: underline;">example@algonquin.com</a> to get registered</h4>
-
                 </div>
                 <div class="form-section">
                     <h2>Sign In</h2>
-                    <form>
+                    <form action="login" method="POST">
                         <label for="email">Email</label>
                         <input type="email" id="email" name="email" required>
                         <label for="password">Password</label>
