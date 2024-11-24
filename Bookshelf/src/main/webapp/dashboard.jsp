@@ -23,28 +23,68 @@
     <!-- Search Bar and Filter Section -->
     <section class="search-section">
         <h2>Search for Books</h2>
-        <form action="search" method="get" class="search-form">
-        
-            <input type="text" name="query" placeholder="Search for books..." class="search-input">
+        <!-- Updated Search Form -->
+        <form action="searchBooks" method="get" class="search-form">
+            <input type="text" name="title" placeholder="Search for books..." class="search-input">
 
             <!-- Filter Options -->
             <div class="filters">
+                <!-- Genre Dropdown -->
                 <label for="genre">Genre:</label>
                 <select name="genre" id="genre" class="filter-select">
-                    <option value="">All Genres</option>
-                    <option value="fiction">Fiction</option>
-                    <option value="nonfiction">Nonfiction</option>
-                    <!-- More genres tbd-->
+                    <option value="All Genres">All Genres</option>
+                    <option value="1">Adventure</option>
+                    <option value="2">Cookbook</option>
+                    <option value="3">Economics</option>
+                    <option value="4">Fantasy</option>
+                    <option value="5">Health</option>
+                    <option value="6">History</option>
+                    <option value="7">Horror</option>
+                    <option value="15">Memoir</option>
+                    <option value="8">Mystery</option>
+                    <option value="9">Novel</option>
+                    <option value="10">Romance</option>
+                    <option value="11">Science</option>
+                    <option value="12">Science Fiction</option>
+                    <option value="13">Thriller</option>
+                    <option value="14">Travel</option>
                 </select>
 
+                <!-- Author Dropdown -->
                 <label for="author">Author:</label>
-                <input type="text" name="author" id="author" placeholder="Author's name" class="filter-input">
+                <select name="author" id="author" class="filter-select">
+                    <option value="">All Authors</option>
+                    <option value="Yuval Noah Harari">Yuval Noah Harari</option>
+                    <option value="Tochi Onyebuchi">Tochi Onyebuchi</option>
+                    <option value="Thomas Piketty">Thomas Piketty</option>
+                    <option value="Stieg Larsson">Stieg Larsson</option>
+                    <option value="Stephen King">Stephen King</option>
+                    <option value="Stephen Hawking">Stephen Hawking</option>
+                    <option value="Sara Shepard">Sara Shepard</option>
+                    <option value="Samin Nosrat">Samin Nosrat</option>
+                    <option value="Rutger Bregman">Rutger Bregman</option>
+                    <option value="Patrick Bringley">Patrick Bringley</option>
+                    <option value="Nicholas Sparks">Nicholas Sparks</option>
+                    <option value="Kim Stanley Robinson">Kim Stanley Robinson</option>
+                    <option value="Jon Krakauer">Jon Krakauer</option>
+                    <option value="Jojo Moyes">Jojo Moyes</option>
+                    <option value="J.K. Rowling">J.K. Rowling</option>
+                    <option value="Harper Lee">Harper Lee</option>
+                    <option value="Gillian Flynn">Gillian Flynn</option>
+                    <option value="George R.R. Martin">George R.R. Martin</option>
+                    <option value="David Graeber and David Wengrow">David Graeber and David Wengrow</option>
+                    <option value="Colleen Hoover">Colleen Hoover</option>
+                    <option value="Christopher Paolini">Christopher Paolini</option>
+                    <option value="Andy Weir">Andy Weir</option>
+                    <option value="Agatha Christie">Agatha Christie</option>
+                </select>
 
+                <!-- Availability Dropdown -->
                 <label for="availability">Availability:</label>
                 <select name="availability" id="availability" class="filter-select">
-                    <option value="">Any</option>
-                    <option value="yes">Yes</option>
-                    <option value="no">No</option>
+                    <option value="Any">Any</option>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
                 </select>
             </div>
 

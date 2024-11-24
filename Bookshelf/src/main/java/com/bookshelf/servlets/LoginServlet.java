@@ -21,7 +21,7 @@ public class LoginServlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         System.out.println("LoginServlet doGet called - Forwarding to login.jsp");
-        request.getRequestDispatcher("login.jsp").forward(request, response);
+        request.getRequestDispatcher("index.jsp").forward(request, response);
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -37,7 +37,7 @@ public class LoginServlet extends HttpServlet {
             if (email == null || email.isEmpty() || password == null || password.isEmpty()) {
                 System.out.println("Login failed - Empty email or password");
                 request.setAttribute("message", "Please fill in all fields.");
-                request.getRequestDispatcher("login.jsp").forward(request, response);
+                request.getRequestDispatcher("index.jsp").forward(request, response);
                 return;
             }
 
@@ -45,7 +45,7 @@ public class LoginServlet extends HttpServlet {
             if (!UserDao.emailExists(email)) {
                 System.out.println("Login failed - Email not found: " + email);
                 request.setAttribute("message", "No account found with this email. Please register.");
-                request.getRequestDispatcher("login.jsp").forward(request, response);
+                request.getRequestDispatcher("index.jsp").forward(request, response);
                 return;
             }
 
@@ -54,13 +54,14 @@ public class LoginServlet extends HttpServlet {
             if (user == null) {
                 System.out.println("Login failed - Invalid email or password");
                 request.setAttribute("message", "Email and password do not match. Please try again.");
-                request.getRequestDispatcher("login.jsp").forward(request, response);
+                request.getRequestDispatcher("index.jsp").forward(request, response);
                 return;
             }
 
             // If authentication is successful, start session and redirect to the dashboard
             HttpSession session = request.getSession();
             session.setAttribute("user", user);
+
 
             System.out.println("Login successful -  Email: " + user.getEmail());
             
@@ -70,7 +71,7 @@ public class LoginServlet extends HttpServlet {
             System.out.println("An error occurred during login: " + e.getMessage());
             e.printStackTrace();
             request.setAttribute("message", "An error occurred during login. Please try again.");
-            request.getRequestDispatcher("login.jsp").forward(request, response);
+            request.getRequestDispatcher("index.jsp").forward(request, response);
         }
     }
 }
