@@ -1,7 +1,8 @@
 package com.bookshelf.servlets;
 
 import com.bookshelf.dao.BookDao;
-import com.bookshelf.beans.Book;
+import com.bookshelf.dtos.BookDto;
+
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -43,7 +44,7 @@ public class SearchServlet extends HttpServlet {
         try {
             // Interact with the DAO to retrieve books
             BookDao bookDao = new BookDao();
-            List<Book> books = bookDao.searchBooks(title, author, genre, availability);
+            List<BookDto> books = bookDao.searchBooks(title, author, genre, availability);
 
             // Log the number of books retrieved
             System.out.println("Books retrieved: " + (books != null ? books.size() : "null"));

@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ page import="java.util.List, com.bookshelf.beans.Book" %>
+<%@ page import="java.util.List, com.bookshelf.dtos.BookDto" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -22,15 +22,17 @@
         <h2>Search Results</h2>
         <ul>
             <%
-                List<Book> books = (List<Book>) request.getAttribute("books");
+                List<BookDto> books = (List<BookDto>) request.getAttribute("books");
                 if (books != null && !books.isEmpty()) {
-                    for (Book book : books) {
+                    for (BookDto book : books) {
             %>
                         <li class="book-item">
                             <h3><%= book.getTitle() %></h3>
                             <p><strong>Author:</strong> <%= book.getAuthor() %></p>
                             <p><strong>Genre:</strong> <%= book.getGenre() %></p>
+                            <p><strong>ISBN:</strong> <%= book.getIsbn() %></p>
                             <p><strong>Publication Year:</strong> <%= book.getPublishedYear() %></p>
+                            <p><strong>Location:</strong> <%= book.getLibrary_name() %></p>
                         </li>
             <%
                     }
