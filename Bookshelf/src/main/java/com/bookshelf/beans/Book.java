@@ -7,14 +7,16 @@ public class Book {
     private String isbn;
     private int publishedYear;
     private String genre;
+    private String availability;
 
-    public Book(String id, String title, String author, String isbn, int publishedYear, String genre) {
+    public Book(String id, String title, String author, String isbn, int publishedYear, String genre, String availability) {
         this.id = id;
         this.title = title;
         this.author = author;
         this.isbn = isbn;
         this.publishedYear = publishedYear;
         this.genre = genre;
+        this.availability = availability;
     }
 
     // Getters and Setters
@@ -30,4 +32,6 @@ public class Book {
     public void setPublishedYear(int publishedYear) { this.publishedYear = publishedYear; }
     public String getGenre() { return genre; }
     public void setGenre(String genre) { this.genre = genre; }
+    public String getAvailability() {return availability;}
+    public void setAvailability(String availability) {this.availability = availability;}
 }

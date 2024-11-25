@@ -1,4 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="java.util.List, com.bookshelf.beans.Book" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bookshelf | Dashboard</title>
     <link rel="stylesheet" href="css/dashboard.css">
+
 </head>
 <body class="background">
 
@@ -23,13 +25,9 @@
     <!-- Search Bar and Filter Section -->
     <section class="search-section">
         <h2>Search for Books</h2>
-        <!-- Updated Search Form -->
         <form action="searchBooks" method="get" class="search-form">
             <input type="text" name="title" placeholder="Search for books..." class="search-input">
-
-            <!-- Filter Options -->
             <div class="filters">
-                <!-- Genre Dropdown -->
                 <label for="genre">Genre:</label>
                 <select name="genre" id="genre" class="filter-select">
                     <option value="All Genres">All Genres</option>
@@ -49,8 +47,6 @@
                     <option value="13">Thriller</option>
                     <option value="14">Travel</option>
                 </select>
-
-                <!-- Author Dropdown -->
                 <label for="author">Author:</label>
                 <select name="author" id="author" class="filter-select">
                     <option value="">All Authors</option>
@@ -78,17 +74,8 @@
                     <option value="Andy Weir">Andy Weir</option>
                     <option value="Agatha Christie">Agatha Christie</option>
                 </select>
-
-                <!-- Availability Dropdown -->
-                <label for="availability">Availability:</label>
-                <select name="availability" id="availability" class="filter-select">
-                    <option value="Any">Any</option>
-                    <option value="Yes">Yes</option>
-                    <option value="No">No</option>
-                </select>
+         
             </div>
-
-            <!-- Search Button -->
             <button type="submit" class="btn-search">Search</button>
         </form>
     </section>
@@ -96,12 +83,29 @@
     <!-- Main Content -->
     <main class="dashboard-container">
         <h2>Your Dashboard</h2>
-        <p class="welcome-message">Hello! Welcome to your Bookshelf dashboard.</p>
-        <p>Here’s what you can do:</p>
-        <ul class="actions-list">
-            <li><a href="profile.jsp">View and edit your profile</a></li>
-            <li><a href="reservations.jsp">Browse and manage your book reservations</a></li>
-        </ul>
+
+        <!-- Display Search Results -->
+        <div class="search-results">
+            <%
+                List<Book> books = (List<Book>) request.getAttribute("books");
+                if (books != null && !books.isEmpty()) {
+                    for (Book book : books) {
+            %>
+                        <div class="book-card">
+                            <h3><%= book.getTitle() %></h3>
+                            <p><strong>Author:</strong> <%= book.getAuthor() %></p>
+                            <p><strong>Genre:</strong> <%= book.getGenre() %></p>
+                            <p><strong>Availability:</strong> <%= book.getAvailability() %></p>
+                        </div>
+            <%
+                    }
+                } else {
+            %>
+                    <p>No books found matching your search criteria.</p>
+            <%
+                }
+            %>
+        </div>
     </main>
 
     <!-- Footer -->

@@ -36,17 +36,22 @@
     color: #ffd700;
 }
 
-/* Dashboard Container */
+/* Dashboard Container with Improved Scrolling */
 .dashboard-container {
     text-align: center;
     max-width: 800px;
     width: 100%;
-    padding: 2rem;
+    padding: 1rem; 
     background-color: #ffffff;
     margin-top: 1rem;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
+    height: 400px; 
+    overflow-y: scroll; 
+    overflow-x: hidden; 
+    position: relative;
 }
+
 
 /* Welcome Message */
 .welcome-message {
@@ -78,13 +83,17 @@
 /* Footer */
 .footer {
     text-align: center;
-    padding: 1rem;
+    padding: 0.1rem 0.2rem; 
     width: 100%;
     background-color: #000000;
     color: #fff;
     position: fixed;
     bottom: 0;
+    font-size: 0.7rem; 
 }
+
+
+
 
 .search-section {
     text-align: center;
@@ -148,6 +157,32 @@
 
 .btn-search:hover {
     background-color: #333333; 
+}
+
+.book-card {
+	border: 1px solid #ccc;
+	border-radius: 6px;
+	padding: 8px; 
+	margin: 6px 0; 
+	background-color: #ffffff;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	max-width: 95%; 
+	margin-left: auto;
+	margin-right: auto;
+	font-size: 0.85rem; 
+}
+		
+.book-card h3 {
+	margin: 0 0 6px 0;
+	font-size: 0.95rem; 
+	color: #333;
+	text-align: left;
+}
+		
+.book-card p {
+	margin: 2px 0; 
+	font-size: 0.8rem; 
+	color: #555;
 }
 
 
