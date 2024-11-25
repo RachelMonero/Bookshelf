@@ -1,7 +1,9 @@
 package com.bookshelf.servlets;
 
 import com.bookshelf.dao.BookDao;
-import com.bookshelf.beans.Book;
+import com.bookshelf.dtos.BookDto;
+
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
@@ -15,7 +17,7 @@ public class SearchServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // Validate user session
-        HttpSession session = request.getSession(false); // Avoid creating a new session
+        HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("user") == null) {
             response.sendRedirect("index.jsp");
             return;
@@ -25,10 +27,15 @@ public class SearchServlet extends HttpServlet {
         String title = request.getParameter("title") != null ? request.getParameter("title").trim() : null;
         String author = request.getParameter("author") != null ? request.getParameter("author").trim() : null;
         String genre = request.getParameter("genre") != null ? request.getParameter("genre").trim() : "All Genres";
-        String availability = request.getParameter("availability") != null ? request.getParameter("availability").trim() : "Any";
+        String availability = request.getParameter("availability");
 
-        // Debug: Log parameters
-        System.out.println("Search Parameters:");
+        // By default, only show available books
+        if (availability == null || availability.isEmpty() || "Any".equalsIgnoreCase(availability)) {
+            availability = "1"; 
+        }
+
+        // Log parameters
+        System.out.println("Raw Parameters Received:");
         System.out.println("Title: " + title);
         System.out.println("Author: " + author);
         System.out.println("Genre: " + genre);
@@ -37,26 +44,24 @@ public class SearchServlet extends HttpServlet {
         try {
             // Interact with the DAO to retrieve books
             BookDao bookDao = new BookDao();
-            List<Book> books = bookDao.searchBooks(title, author, genre, availability);
+            List<BookDto> books = bookDao.searchBooks(title, author, genre, availability);
 
-            // Debug: Log retrieved results
+            // Log the number of books retrieved
             System.out.println("Books retrieved: " + (books != null ? books.size() : "null"));
 
             // Set books as a request attribute
             request.setAttribute("books", books);
 
             // Forward to JSP
-            request.getRequestDispatcher("searchResults.jsp").forward(request, response);
+            request.getRequestDispatcher("dashboard.jsp").forward(request, response);
         } catch (Exception e) {
             e.printStackTrace();
-            // Redirect to an error page or display a user-friendly message
             response.sendRedirect("error.jsp");
         }
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // Delegate POST to GET for simplicity
         doGet(request, response);
     }
 }
