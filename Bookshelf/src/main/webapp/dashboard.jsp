@@ -83,6 +83,14 @@
     <!-- Main Content -->
     <main class="dashboard-container">
         <h2>Your Dashboard</h2>
+        
+          <% String message = (String) request.getAttribute("message"); %>
+
+          <% if (message != null) { %>
+              <script>
+                  alert("<%= message %>");
+              </script>
+          <% } %>
 
         <!-- Display Search Results -->
         <div class="search-results">
@@ -93,11 +101,18 @@
             %>
                         <div class="book-card">
                             <h3><%= book.getTitle() %></h3>
+                            
                             <p><strong>Author:</strong> <%= book.getAuthor() %></p>
                             <p><strong>Genre:</strong> <%= book.getGenre() %></p>
                             <p><strong>ISBN:</strong> <%= book.getIsbn() %></p>
                             <p><strong>Publication Year:</strong> <%= book.getPublishedYear() %></p>
                             <p><strong>Location:</strong> <%= book.getLibrary_name() %></p>
+
+                              <form action="reserveBook" method="post">
+                                <input type="hidden" name="library_book_id" value="<%= book.getLibrary_Book_id()%>">   
+                                <button type="submit" class="btn-reserve">Reserve</button>                               
+                              </form> 
+                            
                         </div>
             <%
                     }

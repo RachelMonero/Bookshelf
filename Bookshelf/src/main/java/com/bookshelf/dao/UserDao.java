@@ -168,7 +168,7 @@ public class UserDao {
         return exists;
     }
 
-
+    
 	public static User authenticateUser(String email, String password) {
 		try (Connection connection = DBConnection.getDBInstance()) {
 	        String query = "SELECT * FROM bookshelf_user WHERE email = ? AND password = ? AND is_verified = TRUE";
@@ -181,6 +181,7 @@ public class UserDao {
 	            String userId = resultSet.getString("user_id");
 	            String firstName = resultSet.getString("first_name");
 	            String lastName = resultSet.getString("last_name");
+	            
 	            return new User(userId, firstName, lastName, true);
 	        }
 	    } catch (SQLException e) {
@@ -189,5 +190,38 @@ public class UserDao {
 	        e.printStackTrace();
 	    }
 	    return null;
+	}
+	
+	public static String findIdByEmail(String email) {
+	    String userId = null;
+	    String query = "SELECT user_id FROM bookshelf_user WHERE email = ?";
+
+	    try (Connection connection = DBConnection.getDBInstance();
+	         PreparedStatement statement = connection.prepareStatement(query)) {
+
+	        // Set the email parameter
+	        statement.setString(1, email);
+
+	        // Execute the query
+	        try (ResultSet rs = statement.executeQuery()) {
+	            if (rs.next()) {
+	                userId = rs.getString("user_id");
+	                if (userId == null || userId.isEmpty()) {
+	                    System.out.println("User ID is empty or null for email: " + email);
+	                }
+	            } else {
+	                System.out.println("No user found for email: " + email);
+	            }
+	        }
+
+	    } catch (SQLException e) {
+	        System.err.println("SQL Exception occurred while finding user ID by email.");
+	        DBUtil.processException(e); 
+	    } catch (ClassNotFoundException e) {
+	        System.err.println("Database connection class not found.");
+	        e.printStackTrace();
+	    }
+
+	    return userId;
 	}
 }
