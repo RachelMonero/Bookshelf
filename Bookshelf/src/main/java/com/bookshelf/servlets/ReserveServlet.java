@@ -61,13 +61,7 @@ public class ReserveServlet extends HttpServlet {
         }
 
         request.getRequestDispatcher("dashboard.jsp").forward(request, response);
-        
-        
-        
-        
-        
-        
-		doGet(request, response);
+
 	}
 
 }
