@@ -83,31 +83,53 @@
     <!-- Main Content -->
     <main class="dashboard-container">
         <h2>Your Dashboard</h2>
+        
+          <% String message = (String) request.getAttribute("message"); %>
+
+          <% if (message != null) { %>
+               <p class="message">
+                 <%= message %>
+               </p>
+          <% } %>
 
         <!-- Display Search Results -->
-        <div class="search-results">
-            <%
-                List<BookDto> books = (List<BookDto>) request.getAttribute("books");
-                if (books != null && !books.isEmpty()) {
-                    for (BookDto book : books) {
-            %>
-                        <div class="book-card">
-                            <h3><%= book.getTitle() %></h3>
-                            <p><strong>Author:</strong> <%= book.getAuthor() %></p>
-                            <p><strong>Genre:</strong> <%= book.getGenre() %></p>
-                            <p><strong>ISBN:</strong> <%= book.getIsbn() %></p>
-                            <p><strong>Publication Year:</strong> <%= book.getPublishedYear() %></p>
-                            <p><strong>Location:</strong> <%= book.getLibrary_name() %></p>
-                        </div>
-            <%
-                    }
-                } else {
-            %>
-                    <p>No books found matching your search criteria.</p>
-            <%
-                }
-            %>
-        </div>
+		<div class="search-results">
+		    <%
+		        List<BookDto> books = (List<BookDto>) request.getAttribute("books");
+		        if (books == null ) { 
+		        	if (message == null){
+		    %>
+		        <!-- No search has been performed yet -->
+		        <p>Use the search bar above to find books.</p>
+		    <%
+		        	}
+		        } else if (books.isEmpty()) {
+		    %>
+		        <!-- Search performed but no results found -->
+		        <p>No books found matching your search criteria.</p>
+		    <%
+		        } else {
+		            for (BookDto book : books) {
+		    %>
+		                <div class="book-card">
+		                    <h3><%= book.getTitle() %></h3>
+		                    <p><strong>Author:</strong> <%= book.getAuthor() %></p>
+		                    <p><strong>Genre:</strong> <%= book.getGenre() %></p>
+		                    <p><strong>ISBN:</strong> <%= book.getIsbn() %></p>
+		                    <p><strong>Publication Year:</strong> <%= book.getPublishedYear() %></p>
+		                    <p><strong>Location:</strong> <%= book.getLibrary_name() %></p>
+		
+		                    <form action="reserveBook" method="post">
+		                        <input type="hidden" name="library_book_id" value="<%= book.getLibrary_Book_id() %>">
+		                        <button type="submit" class="btn-reserve">Reserve</button>
+		                    </form>
+		                </div>
+		    <%
+		            }
+		        }
+		    %>
+		</div>
+
     </main>
 
     <!-- Footer -->

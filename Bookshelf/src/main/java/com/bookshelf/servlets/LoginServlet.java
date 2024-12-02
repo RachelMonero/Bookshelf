@@ -61,9 +61,10 @@ public class LoginServlet extends HttpServlet {
             // If authentication is successful, start session and redirect to the dashboard
             HttpSession session = request.getSession();
             session.setAttribute("user", user);
+            session.setAttribute("email", email);
 
-
-            System.out.println("Login successful -  Email: " + user.getEmail());
+            System.out.println("Login successful -  User: "+user);
+            System.out.println("Login successful -  Email: " + email); 
             
             response.sendRedirect("dashboard.jsp");
 

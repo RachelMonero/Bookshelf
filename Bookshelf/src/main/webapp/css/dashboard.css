@@ -171,18 +171,24 @@
 	margin-right: auto;
 	font-size: 0.85rem; 
 }
+
+
 		
 .book-card h3 {
 	margin: 0 0 6px 0;
 	font-size: 0.95rem; 
 	color: #333;
 	text-align: left;
+	padding-bottom: 10px;
 }
 		
 .book-card p {
 	margin: 2px 0; 
 	font-size: 0.8rem; 
 	color: #555;
+	text-align: center;
 }
-
+.book-card button {
+	text-align: right;
+}
 
