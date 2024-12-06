@@ -139,6 +139,7 @@ public class ApplicationDao {
                         + "is_verified TINYINT NOT NULL DEFAULT 0, "
                         + "FOREIGN KEY (address_id) REFERENCES " + ADDRESS_TABLE + "(address_id) ON DELETE SET NULL)";
                 stmt.executeUpdate(sql);
+                insertDefaultUser(conn); // insert default Users (Admin, Ottawa Librarian,Toronto Librarian)
                 System.out.println("Created User Table");
             }
         } catch (SQLException e) {
@@ -163,6 +164,7 @@ public class ApplicationDao {
                         + "FOREIGN KEY (user_id) REFERENCES " + USERS_TABLE + "(user_id) ON DELETE CASCADE, "
                         + "FOREIGN KEY (role_id) REFERENCES " + ROLES_TABLE + "(role_id) ON DELETE CASCADE)";
                 stmt.executeUpdate(sql);
+                insertDefaultUserRole(conn); // insert default userRoles for Admin and Librarians
                 System.out.println("Created UserRole Table");
             }
         } catch (SQLException e) {
@@ -443,7 +445,7 @@ public class ApplicationDao {
 
     }
     
-    // Default Address data for Libarary
+    // Default Address data for Library
     private void insertDefaultAddress(Connection conn) throws SQLException {
     	String checkAddressSql = "SELECT COUNT(*) FROM " + ADDRESS_TABLE + " WHERE address_id = ?";
         String insertAddressSql = "INSERT INTO " + ADDRESS_TABLE + " (Address_id, address, city, province, country, postal_code) VALUES (?,?,?,?,?,?)";
@@ -459,6 +461,10 @@ public class ApplicationDao {
         			{"e1cd2ea2-63a4-485f-8610-02b480967ba1","6 King Street","Kitchener","ON","CA","N2GG2N"},
         			{"46fd24c2-ddec-46e7-9ce7-5e463f8ccb2f","78 Oxford Street","London","ON","CA","N5VV5N"},
         			{"629c8672-6afb-4319-b425-fcdf24e6d47f","9 Adam Drive","Barrie","ON","CA","L4MM4L"},
+        			
+        			{"5ac673d0-b37d-11ef-814d-325096b39f47","109 Spark Street","Ottawa","ON","CA","K1PP1K"}, // Admin user adress
+        			{"5ac675b0-b37d-11ef-b64c-325096b39f47","24 Kirkwood Avenue","Ottawa","ON","CA","K1BB1K"}, // Librarian user(Ottawa) address
+        			{"5ac67696-b37d-11ef-a2ad-325096b39f47","53 Avenue","Toronto","ON","CA","M5JJ5M"}, // Librarian user(Toronto) address
         			
                 };
 
@@ -484,109 +490,90 @@ public class ApplicationDao {
                 }
             }
         }
-    }
-  
+    }  
     
- // Default Library data
-    private void insertDefaultLibrary(Connection conn) throws SQLException {
-    	String checkLibrarySql = "SELECT COUNT(*) FROM " + LIBRARY_TABLE + " WHERE library_name = ?";
-        String insertLibrarySql = "INSERT INTO " + LIBRARY_TABLE + " (library_id, library_name, library_address_id, library_email, library_phone) VALUES (?,?,?,?,?)";
+ 
+    // Default Admin & Librarian User data 
+    private void insertDefaultUser(Connection conn) throws SQLException {
+    	String checkUserSql = "SELECT COUNT(*) FROM " + USERS_TABLE + " WHERE email = ?";
+        String insertUserSql = "INSERT INTO " + USERS_TABLE + " (user_id, email, username, password, first_name, last_name, address_id, is_verified) VALUES (?,?,?,?,?,?,?,?)";
 
         try (
-        	PreparedStatement checkStmt = conn.prepareStatement(checkLibrarySql);
-            PreparedStatement insertStmt = conn.prepareStatement(insertLibrarySql);
+        	PreparedStatement checkStmt = conn.prepareStatement(checkUserSql);
+            PreparedStatement insertStmt = conn.prepareStatement(insertUserSql);
         ) {
 
-        	String[][] defaultLibraries = {
-        			{"8b1b621c-c3f6-4e8a-b0fb-5a75dc4bcb73","Ottawa Library","8c167ec7-4227-4d8d-8af5-0bc47a801ee2"," ottawa.libarary@email.com ","613-123-4567"},
-        			{"1ac48991-dc33-495f-a80e-e7bc098d7e83","Toronto Library","6db79129-b19e-4c47-972c-edbd0ae38fb2","toronto.libarary@email.com",null},
-        			{"046476ec-24ec-49c7-b8d4-02cb63d11af7","Kitchener Library","e1cd2ea2-63a4-485f-8610-02b480967ba1","kitchener.library@email.com", null},
-        			{"d634c1d1-ac45-46cb-8e6b-2eda466ec305","London Library","46fd24c2-ddec-46e7-9ce7-5e463f8ccb2f","london.library@email.com","516-789-0000"},
-        			{"a8bf7002-81cb-4a74-a065-002d93fc8e92","Barrie Library","629c8672-6afb-4319-b425-fcdf24e6d47f","barrie.libarary@email.com","705-432-1234"},
+        	String[][] defaultUsers = {
+        			//Admin
+        			{"5ac66fc0-b37d-11ef-bf20-325096b39f47","admin@email.com","admin","password ","sys","admin","5ac673d0-b37d-11ef-814d-325096b39f47","true"},
+        			//Ottawa Librarian
+        			{"5ac67524-b37d-11ef-a678-325096b39f47","ottawa_lib@email.com","ottawa_lib","password ","Ottawa","Librarian","5ac675b0-b37d-11ef-b64c-325096b39f47","true"},
+                    //Toronto Librarian
+        			{"5ac67628-b37d-11ef-9800-325096b39f47","toronto_lib@email.com","toronto_lib","password ","Toronto","Librarian","5ac67696-b37d-11ef-a2ad-325096b39f47","true"},
+        	};
+
+        	for (String[] user : defaultUsers) {
+                checkStmt.setString(1, user[1]);
+                
+                try (ResultSet rs = checkStmt.executeQuery()) {
+                    if (rs.next() && rs.getInt(1) == 0) {
+         
+                        insertStmt.setString(1, user[0]); // user_id
+                        insertStmt.setString(2, user[1]); // email
+                        insertStmt.setString(3, user[2]); // username
+                        insertStmt.setString(4, user[3]); // password
+                        insertStmt.setString(5, user[4]); // first_name
+                        insertStmt.setString(6, user[5]); // last_name
+                        insertStmt.setString(7, user[6]); // address_id
+                        
+                        boolean isVerified = Boolean.parseBoolean(user[7]);
+                        insertStmt.setBoolean(8, isVerified); // is_verified
+                                                                        
+                        insertStmt.executeUpdate();
+
+
+
+                    }
+                }
+            }
+        }
+    }
+    
+ // Default User role for Admin and Librarians
+    private void insertDefaultUserRole(Connection conn) throws SQLException {
+    	String checkUserRoleSql = "SELECT COUNT(*) FROM " + USER_ROLE_TABLE + " WHERE user_id = ?";
+        String insertUserRoleSql = "INSERT INTO " + USER_ROLE_TABLE + " (user_role_id, user_id, role_id, assigned_date, status) VALUES (?,?,?,?,?)";
+
+        try (
+        	PreparedStatement checkStmt = conn.prepareStatement(checkUserRoleSql);
+            PreparedStatement insertStmt = conn.prepareStatement(insertUserRoleSql);
+        ) {
+
+        	String[][] defaultUserRole = {
+			
+        			{"694e6342-b380-11ef-a3c7-325096b39f47","5ac66fc0-b37d-11ef-bf20-325096b39f47","35ea87d3-7df2-4cf3-9e4c-d326027cbe95","Active"}, // Admin user adress
+        			{"70c5c1ba-b380-11ef-be12-325096b39f47","5ac67524-b37d-11ef-a678-325096b39f47","f69581bb-5f5b-4950-bcaa-3a8c5a8db3e5","Active"}, // Librarian user(Ottawa) address
+        			{"7555dbfc-b380-11ef-aa12-325096b39f47","5ac67628-b37d-11ef-9800-325096b39f47","f69581bb-5f5b-4950-bcaa-3a8c5a8db3e5","Active"}, // Librarian user(Toronto) address
         			
                 };
 
-        	for (String[] library : defaultLibraries) {
-                // Check if library already exists
-                checkStmt.setString(1, library[1]);
+        	for (String[] userRole : defaultUserRole) {
+
+                checkStmt.setString(1, userRole[1]);
+                
                 try (ResultSet rs = checkStmt.executeQuery()) {
                     if (rs.next() && rs.getInt(1) == 0) {
-                        // library does not exist; Insert default library
-                        insertStmt.setString(1, library[0]); // library_id
-                        insertStmt.setString(2, library[1]); // library_name
-                        insertStmt.setString(3, library[2]); // library_address_id
-                        insertStmt.setString(4, library[3]); // library_email
-                        insertStmt.setString(5, library[4]); // library_phone
-                                                                        
-                        insertStmt.executeUpdate();
-
-
-
-                    }
-                }
-            }
-        }
-    }
-    
-    
-    // Default Library Book data
-    private void insertDefaultLibraryBook(Connection conn) throws SQLException {
-    	String checkLibraryBookSql = "SELECT COUNT(*) FROM " + LIBRARY_BOOK_TABLE + " WHERE library_id = ? AND book_id= ? ";
-        String insertLibraryBookSql = "INSERT INTO " + LIBRARY_BOOK_TABLE + " (library_book_id, library_id, book_id, added_date, is_available) VALUES (?,?,?,?,?)";
-
-        try (
-        	PreparedStatement checkStmt = conn.prepareStatement(checkLibraryBookSql);
-            PreparedStatement insertStmt = conn.prepareStatement(insertLibraryBookSql);
-        ) {
-
-        	String[][] defaultLibraryBooks = {
-        			{"535f8cfa-540c-4d86-949c-375fbc9b45a2", "8b1b621c-c3f6-4e8a-b0fb-5a75dc4bcb73", "7c022414-7bb2-4790-b3fe-d1424a1880d0","true"}, //Ottawa Library Inventory
-        			{"c71b0221-7017-4c3e-bbee-71ca1cb79069", "8b1b621c-c3f6-4e8a-b0fb-5a75dc4bcb73", "9e2fc376-e597-44f6-a2d5-ffb8400052ba","false"},
-        			{"b7ee9148-59bb-46b8-8720-c811c2eca610", "8b1b621c-c3f6-4e8a-b0fb-5a75dc4bcb73", "6369172f-9b5c-429c-b734-bed65324e2e8","true"},
-        			{"e70beaf1-eff2-46cb-9770-0d9d9509cd86", "8b1b621c-c3f6-4e8a-b0fb-5a75dc4bcb73", "c9527ca4-684b-42e0-b95d-2d193cf25d01","true"},
-        			{"ba605c1e-dc59-4234-96cd-ddc69f5efb5f", "8b1b621c-c3f6-4e8a-b0fb-5a75dc4bcb73", "9be2892f-9bd1-45cb-84b9-b76372057668","false"},
-        			{"b8115c45-92eb-4114-845f-e43399ec1982", "8b1b621c-c3f6-4e8a-b0fb-5a75dc4bcb73", "b12edf9e-dc81-4c5f-bab1-be73e7591616","true"},
-        			{"880964ba-6357-43fd-9c54-cb26b8d1b925", "1ac48991-dc33-495f-a80e-e7bc098d7e83", "143ea9e6-c077-4114-8afa-dd992daf8649","false"},//Toronto Library Inventory
-        			{"c11f0b93-fa20-430e-a895-90ad26d98051", "1ac48991-dc33-495f-a80e-e7bc098d7e83", "6369172f-9b5c-429c-b734-bed65324e2e8","true"},
-        			{"19583954-b61f-48dd-90bc-3a91a9e8d66d", "1ac48991-dc33-495f-a80e-e7bc098d7e83", "ac06cc43-35d2-4249-9405-c70a5c615271","ture"},
-        			{"88d7f4b1-6637-4cdd-b77c-7fa455d4dcf2", "1ac48991-dc33-495f-a80e-e7bc098d7e83", "044d6fac-ac31-4b1f-b5a3-9169b767f5a4","ture"},
-        			{"f044d87e-d40c-4c92-9b3f-6f6e028334f2", "1ac48991-dc33-495f-a80e-e7bc098d7e83", "5fb2411c-0278-44a5-a74d-ecf149c92e26","false"},
-        			{"5b71a231-c745-4ced-9fb4-3467956a30d8", "1ac48991-dc33-495f-a80e-e7bc098d7e83", "8262f5b7-9bb5-4ccf-a8d0-c458e3526496","true"},
-        			{"4bcc4e3c-3ca9-4871-b352-e56781601c6a", "1ac48991-dc33-495f-a80e-e7bc098d7e83", "b12edf9e-dc81-4c5f-bab1-be73e7591616","false"},
-        			{"207d23b8-1631-4723-ad0b-6bad2e73135b", "046476ec-24ec-49c7-b8d4-02cb63d11af7", "7c022414-7bb2-4790-b3fe-d1424a1880d0","false"},//Kitchener Library Inventory
-        			{"5bfcab69-9498-4332-9d09-62fe59a63550", "046476ec-24ec-49c7-b8d4-02cb63d11af7", "143ea9e6-c077-4114-8afa-dd992daf8649","true"},
-        			{"d1760e19-b957-4191-99d5-c3ae6a5bdee2", "046476ec-24ec-49c7-b8d4-02cb63d11af7", "c9527ca4-684b-42e0-b95d-2d193cf25d01","true"},
-        			{"d37bf0cf-0a9c-4099-bfa9-b4b838ae1a26", "046476ec-24ec-49c7-b8d4-02cb63d11af7", "9be2892f-9bd1-45cb-84b9-b76372057668","false"},
-        			{"81812f26-26fb-47e3-9722-dfeeba28c45d", "046476ec-24ec-49c7-b8d4-02cb63d11af7", "8262f5b7-9bb5-4ccf-a8d0-c458e3526496","true"},
-        			{"0d24070d-1c16-4cce-8c91-d24425bcbbfd", "046476ec-24ec-49c7-b8d4-02cb63d11af7", "b12edf9e-dc81-4c5f-bab1-be73e7591616","true"},
-        			{"99353241-15da-4ac2-8fdd-2845d3508d28", "d634c1d1-ac45-46cb-8e6b-2eda466ec305", "9e2fc376-e597-44f6-a2d5-ffb8400052ba","true"},//London Library Inventory
-        			{"d4f3f9e7-151f-4d4c-9696-9e658aab3ce4", "d634c1d1-ac45-46cb-8e6b-2eda466ec305", "6369172f-9b5c-429c-b734-bed65324e2e8","true"},
-        			{"b5682be0-8c72-4722-a206-96c9677ab791", "d634c1d1-ac45-46cb-8e6b-2eda466ec305", "044d6fac-ac31-4b1f-b5a3-9169b767f5a4","true"},
-        			{"ac7ffcbc-ba83-4bc6-b0e9-c8c42d7eb66e", "d634c1d1-ac45-46cb-8e6b-2eda466ec305", "5fb2411c-0278-44a5-a74d-ecf149c92e26","false"},
-        			{"aeeeec04-ccb6-4d98-b4e7-8721e87d9d4e", "d634c1d1-ac45-46cb-8e6b-2eda466ec305", "9c7fa7ec-8e67-4d0d-8de7-b15fea48561b","false"},
-        			{"fd9ee4ca-9127-417c-a01a-c1da2e2a8d92", "a8bf7002-81cb-4a74-a065-002d93fc8e92", "7c022414-7bb2-4790-b3fe-d1424a1880d0","false"},//Barrie Library Inventory
-        			{"c2ee7b85-c599-42b9-8cfc-216f77d40233", "a8bf7002-81cb-4a74-a065-002d93fc8e92", "9e2fc376-e597-44f6-a2d5-ffb8400052ba","true"},
-        			{"bce81799-76fa-473a-a805-6f8547ba8c39", "a8bf7002-81cb-4a74-a065-002d93fc8e92", "ac06cc43-35d2-4249-9405-c70a5c615271","false"},
-        			{"263cbf6a-dbc5-4cc0-92af-ada51da85cf8", "a8bf7002-81cb-4a74-a065-002d93fc8e92", "9be2892f-9bd1-45cb-84b9-b76372057668","true"},
-        			{"a365f9c6-2d0b-4132-b2b2-98488d4ce852", "a8bf7002-81cb-4a74-a065-002d93fc8e92", "39a90f56-6945-45f2-a6f4-b48589642b93","true"},
-                };
-
-        	for (String[] libraryBook : defaultLibraryBooks) {
-                // Check if book already exists in the library inventory
-                checkStmt.setString(1, libraryBook[1]);
-                checkStmt.setString(2, libraryBook[2]);
-                try (ResultSet rs = checkStmt.executeQuery()) {
-                    if (rs.next() && rs.getInt(1) == 0) {
-                        // book does not exists in the library, Insert default library book
-                        insertStmt.setString(1, libraryBook[0]); // library_book_id
-                        insertStmt.setString(2, libraryBook[1]); // library_id
-                        insertStmt.setString(3, libraryBook[2]); // book_id
-
+                        // not exist; Insert default userRole
+                    	
+                        insertStmt.setString(1, userRole[0]); // user_role_id
+                        insertStmt.setString(2, userRole[1]); // user_id
+                        insertStmt.setString(3, userRole[2]); // role_id
                         Timestamp added_date = new Timestamp(System.currentTimeMillis());
                         insertStmt.setTimestamp(4, added_date);
-                        boolean isAvailable = Boolean.parseBoolean(libraryBook[3]);
-                        insertStmt.setBoolean(5, isAvailable);; // is_available
-                                                                        
+                        insertStmt.setString(5, userRole[3]); // status
+
+                                            
+                        
                         insertStmt.executeUpdate();
 
 
@@ -595,9 +582,120 @@ public class ApplicationDao {
                 }
             }
         }
-    }
+    }  
     
     
+    
+    // Default Library data
+       private void insertDefaultLibrary(Connection conn) throws SQLException {
+       	String checkLibrarySql = "SELECT COUNT(*) FROM " + LIBRARY_TABLE + " WHERE library_name = ?";
+           String insertLibrarySql = "INSERT INTO " + LIBRARY_TABLE + " (library_id, library_name, library_address_id, library_email, library_phone, librarian_id) VALUES (?,?,?,?,?,?)";
+
+           try (
+           	PreparedStatement checkStmt = conn.prepareStatement(checkLibrarySql);
+               PreparedStatement insertStmt = conn.prepareStatement(insertLibrarySql);
+           ) {
+
+           	String[][] defaultLibraries = {
+           			{"8b1b621c-c3f6-4e8a-b0fb-5a75dc4bcb73","Ottawa Library","8c167ec7-4227-4d8d-8af5-0bc47a801ee2"," ottawa.libarary@email.com ","613-123-4567","5ac67524-b37d-11ef-a678-325096b39f47"},
+           			{"1ac48991-dc33-495f-a80e-e7bc098d7e83","Toronto Library","6db79129-b19e-4c47-972c-edbd0ae38fb2","toronto.libarary@email.com",null,"5ac67628-b37d-11ef-9800-325096b39f47"},
+           			{"046476ec-24ec-49c7-b8d4-02cb63d11af7","Kitchener Library","e1cd2ea2-63a4-485f-8610-02b480967ba1","kitchener.library@email.com", null,null},
+           			{"d634c1d1-ac45-46cb-8e6b-2eda466ec305","London Library","46fd24c2-ddec-46e7-9ce7-5e463f8ccb2f","london.library@email.com","516-789-0000",null},
+           			{"a8bf7002-81cb-4a74-a065-002d93fc8e92","Barrie Library","629c8672-6afb-4319-b425-fcdf24e6d47f","barrie.libarary@email.com","705-432-1234",null},
+           			
+                   };
+
+           	for (String[] library : defaultLibraries) {
+                   // Check if library already exists
+                   checkStmt.setString(1, library[1]);
+                   try (ResultSet rs = checkStmt.executeQuery()) {
+                       if (rs.next() && rs.getInt(1) == 0) {
+                           // library does not exist; Insert default library
+                           insertStmt.setString(1, library[0]); // library_id
+                           insertStmt.setString(2, library[1]); // library_name
+                           insertStmt.setString(3, library[2]); // library_address_id
+                           insertStmt.setString(4, library[3]); // library_email
+                           insertStmt.setString(5, library[4]); // library_phone
+                           insertStmt.setString(6, library[5]); // librarian_id
+                                                                           
+                           insertStmt.executeUpdate();
+
+
+
+                       }
+                   }
+               }
+           }
+       }
+       
+       
+       // Default Library Book data
+       private void insertDefaultLibraryBook(Connection conn) throws SQLException {
+       	String checkLibraryBookSql = "SELECT COUNT(*) FROM " + LIBRARY_BOOK_TABLE + " WHERE library_id = ? AND book_id= ? ";
+           String insertLibraryBookSql = "INSERT INTO " + LIBRARY_BOOK_TABLE + " (library_book_id, library_id, book_id, added_date, is_available) VALUES (?,?,?,?,?)";
+
+           try (
+           	PreparedStatement checkStmt = conn.prepareStatement(checkLibraryBookSql);
+               PreparedStatement insertStmt = conn.prepareStatement(insertLibraryBookSql);
+           ) {
+
+           	String[][] defaultLibraryBooks = {
+           			{"535f8cfa-540c-4d86-949c-375fbc9b45a2", "8b1b621c-c3f6-4e8a-b0fb-5a75dc4bcb73", "7c022414-7bb2-4790-b3fe-d1424a1880d0","true"}, //Ottawa Library Inventory
+           			{"c71b0221-7017-4c3e-bbee-71ca1cb79069", "8b1b621c-c3f6-4e8a-b0fb-5a75dc4bcb73", "9e2fc376-e597-44f6-a2d5-ffb8400052ba","false"},
+           			{"b7ee9148-59bb-46b8-8720-c811c2eca610", "8b1b621c-c3f6-4e8a-b0fb-5a75dc4bcb73", "6369172f-9b5c-429c-b734-bed65324e2e8","true"},
+           			{"e70beaf1-eff2-46cb-9770-0d9d9509cd86", "8b1b621c-c3f6-4e8a-b0fb-5a75dc4bcb73", "c9527ca4-684b-42e0-b95d-2d193cf25d01","true"},
+           			{"ba605c1e-dc59-4234-96cd-ddc69f5efb5f", "8b1b621c-c3f6-4e8a-b0fb-5a75dc4bcb73", "9be2892f-9bd1-45cb-84b9-b76372057668","false"},
+           			{"b8115c45-92eb-4114-845f-e43399ec1982", "8b1b621c-c3f6-4e8a-b0fb-5a75dc4bcb73", "b12edf9e-dc81-4c5f-bab1-be73e7591616","true"},
+           			{"880964ba-6357-43fd-9c54-cb26b8d1b925", "1ac48991-dc33-495f-a80e-e7bc098d7e83", "143ea9e6-c077-4114-8afa-dd992daf8649","false"},//Toronto Library Inventory
+           			{"c11f0b93-fa20-430e-a895-90ad26d98051", "1ac48991-dc33-495f-a80e-e7bc098d7e83", "6369172f-9b5c-429c-b734-bed65324e2e8","true"},
+           			{"19583954-b61f-48dd-90bc-3a91a9e8d66d", "1ac48991-dc33-495f-a80e-e7bc098d7e83", "ac06cc43-35d2-4249-9405-c70a5c615271","ture"},
+           			{"88d7f4b1-6637-4cdd-b77c-7fa455d4dcf2", "1ac48991-dc33-495f-a80e-e7bc098d7e83", "044d6fac-ac31-4b1f-b5a3-9169b767f5a4","ture"},
+           			{"f044d87e-d40c-4c92-9b3f-6f6e028334f2", "1ac48991-dc33-495f-a80e-e7bc098d7e83", "5fb2411c-0278-44a5-a74d-ecf149c92e26","false"},
+           			{"5b71a231-c745-4ced-9fb4-3467956a30d8", "1ac48991-dc33-495f-a80e-e7bc098d7e83", "8262f5b7-9bb5-4ccf-a8d0-c458e3526496","true"},
+           			{"4bcc4e3c-3ca9-4871-b352-e56781601c6a", "1ac48991-dc33-495f-a80e-e7bc098d7e83", "b12edf9e-dc81-4c5f-bab1-be73e7591616","false"},
+           			{"207d23b8-1631-4723-ad0b-6bad2e73135b", "046476ec-24ec-49c7-b8d4-02cb63d11af7", "7c022414-7bb2-4790-b3fe-d1424a1880d0","false"},//Kitchener Library Inventory
+           			{"5bfcab69-9498-4332-9d09-62fe59a63550", "046476ec-24ec-49c7-b8d4-02cb63d11af7", "143ea9e6-c077-4114-8afa-dd992daf8649","true"},
+           			{"d1760e19-b957-4191-99d5-c3ae6a5bdee2", "046476ec-24ec-49c7-b8d4-02cb63d11af7", "c9527ca4-684b-42e0-b95d-2d193cf25d01","true"},
+           			{"d37bf0cf-0a9c-4099-bfa9-b4b838ae1a26", "046476ec-24ec-49c7-b8d4-02cb63d11af7", "9be2892f-9bd1-45cb-84b9-b76372057668","false"},
+           			{"81812f26-26fb-47e3-9722-dfeeba28c45d", "046476ec-24ec-49c7-b8d4-02cb63d11af7", "8262f5b7-9bb5-4ccf-a8d0-c458e3526496","true"},
+           			{"0d24070d-1c16-4cce-8c91-d24425bcbbfd", "046476ec-24ec-49c7-b8d4-02cb63d11af7", "b12edf9e-dc81-4c5f-bab1-be73e7591616","true"},
+           			{"99353241-15da-4ac2-8fdd-2845d3508d28", "d634c1d1-ac45-46cb-8e6b-2eda466ec305", "9e2fc376-e597-44f6-a2d5-ffb8400052ba","true"},//London Library Inventory
+           			{"d4f3f9e7-151f-4d4c-9696-9e658aab3ce4", "d634c1d1-ac45-46cb-8e6b-2eda466ec305", "6369172f-9b5c-429c-b734-bed65324e2e8","true"},
+           			{"b5682be0-8c72-4722-a206-96c9677ab791", "d634c1d1-ac45-46cb-8e6b-2eda466ec305", "044d6fac-ac31-4b1f-b5a3-9169b767f5a4","true"},
+           			{"ac7ffcbc-ba83-4bc6-b0e9-c8c42d7eb66e", "d634c1d1-ac45-46cb-8e6b-2eda466ec305", "5fb2411c-0278-44a5-a74d-ecf149c92e26","false"},
+           			{"aeeeec04-ccb6-4d98-b4e7-8721e87d9d4e", "d634c1d1-ac45-46cb-8e6b-2eda466ec305", "9c7fa7ec-8e67-4d0d-8de7-b15fea48561b","false"},
+           			{"fd9ee4ca-9127-417c-a01a-c1da2e2a8d92", "a8bf7002-81cb-4a74-a065-002d93fc8e92", "7c022414-7bb2-4790-b3fe-d1424a1880d0","false"},//Barrie Library Inventory
+           			{"c2ee7b85-c599-42b9-8cfc-216f77d40233", "a8bf7002-81cb-4a74-a065-002d93fc8e92", "9e2fc376-e597-44f6-a2d5-ffb8400052ba","true"},
+           			{"bce81799-76fa-473a-a805-6f8547ba8c39", "a8bf7002-81cb-4a74-a065-002d93fc8e92", "ac06cc43-35d2-4249-9405-c70a5c615271","false"},
+           			{"263cbf6a-dbc5-4cc0-92af-ada51da85cf8", "a8bf7002-81cb-4a74-a065-002d93fc8e92", "9be2892f-9bd1-45cb-84b9-b76372057668","true"},
+           			{"a365f9c6-2d0b-4132-b2b2-98488d4ce852", "a8bf7002-81cb-4a74-a065-002d93fc8e92", "39a90f56-6945-45f2-a6f4-b48589642b93","true"},
+                   };
+
+           	for (String[] libraryBook : defaultLibraryBooks) {
+                   // Check if book already exists in the library inventory
+                   checkStmt.setString(1, libraryBook[1]);
+                   checkStmt.setString(2, libraryBook[2]);
+                   try (ResultSet rs = checkStmt.executeQuery()) {
+                       if (rs.next() && rs.getInt(1) == 0) {
+                           // book does not exists in the library, Insert default library book
+                           insertStmt.setString(1, libraryBook[0]); // library_book_id
+                           insertStmt.setString(2, libraryBook[1]); // library_id
+                           insertStmt.setString(3, libraryBook[2]); // book_id
+
+                           Timestamp added_date = new Timestamp(System.currentTimeMillis());
+                           insertStmt.setTimestamp(4, added_date);
+                           boolean isAvailable = Boolean.parseBoolean(libraryBook[3]);
+                           insertStmt.setBoolean(5, isAvailable);; // is_available
+                                                                           
+                           insertStmt.executeUpdate();
+
+
+
+                       }
+                   }
+               }
+           }
+       }
     
     private static boolean dbExists(String dbName, ResultSet resultSet) throws SQLException {
         while (resultSet.next()) {
