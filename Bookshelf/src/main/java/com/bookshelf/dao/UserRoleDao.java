@@ -2,9 +2,11 @@ package com.bookshelf.dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 
+import com.bookshelf.beans.UserRole;
 import com.bookshelf.connection.DBConnection;
 import com.bookshelf.connection.DBUtil;
 import com.bookshelf.libs.UUIDGenerator;
@@ -48,4 +50,81 @@ public class UserRoleDao {
 		
 		
 	}
+	
+	public static UserRole findUserRoleById(String user_id) {
+	    try (Connection connection = DBConnection.getDBInstance()) {
+	        String find_user_role_sql = 
+	            "SELECT user_role_id, user_id, role_id, assigned_date, status FROM "+ ApplicationDao.USER_ROLE_TABLE + " WHERE user_id = ?";
+	            
+	        PreparedStatement preparedStmt = connection.prepareStatement(find_user_role_sql);
+	        preparedStmt.setString(1, user_id);
+
+	        ResultSet resultSet = preparedStmt.executeQuery();
+
+	        if (resultSet.next()) {
+
+	            String retrievedUserRoleId = resultSet.getString("user_role_id");
+	            String userId = resultSet.getString("user_id");
+	            String roleId = resultSet.getString("role_id");
+	            Timestamp assignedDate = resultSet.getTimestamp("assigned_date");
+	            String status = resultSet.getString("status");
+
+
+	            return new UserRole(retrievedUserRoleId, userId, roleId, assignedDate, status);
+	        }
+	    } catch (SQLException e) {
+	        DBUtil.processException(e);
+	    } catch (ClassNotFoundException e) {
+	        e.printStackTrace();
+	    }
+
+	    return null; 
+	}
+	
+	public static boolean deleteUserRolesByUserId(String user_id) {
+	    try (Connection connection = DBConnection.getDBInstance()) {
+	        String delete_user_role_sql = 
+	            "DELETE FROM " + ApplicationDao.USER_ROLE_TABLE + " WHERE user_id = ?";
+
+	        PreparedStatement preparedStmt = connection.prepareStatement(delete_user_role_sql);
+	        preparedStmt.setString(1, user_id);
+
+
+	        int rowsDeleted = preparedStmt.executeUpdate();
+
+	        return rowsDeleted > 0; 
+	    } catch (SQLException e) {
+	        DBUtil.processException(e);
+	    } catch (ClassNotFoundException e) {
+	        e.printStackTrace();
+	    }
+	    return false;
+	}
+	
+	
+	public static int countRolesByUserId(String user_id) {
+	    int roleCount = 0;
+
+	    try (Connection connection = DBConnection.getDBInstance()) {
+
+	        String count_roles_sql = 
+	            "SELECT COUNT(*) AS role_count FROM " + ApplicationDao.USER_ROLE_TABLE + " WHERE user_id = ?";
+
+	        PreparedStatement preparedStmt = connection.prepareStatement(count_roles_sql);
+	        preparedStmt.setString(1, user_id);
+
+	        ResultSet resultSet = preparedStmt.executeQuery();
+
+	        if (resultSet.next()) {
+	            roleCount = resultSet.getInt("role_count"); 
+	        }
+	    } catch (SQLException e) {
+	        DBUtil.processException(e);
+	    } catch (ClassNotFoundException e) {
+	        e.printStackTrace();
+	    }
+
+	    return roleCount; 
+	}
+	
 }
