@@ -14,6 +14,7 @@
     <!-- Navbar -->
     <header class="navbar">
         <h1 class="navbar-title">Bookshelf</h1>
+      
         <nav>
             <a href="dashboard.jsp" class="nav-link">Home</a>
             <a href="profile.jsp" class="nav-link">Profile</a>
