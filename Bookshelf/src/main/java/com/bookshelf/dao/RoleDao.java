@@ -74,5 +74,28 @@ public static void add_role(String role_name, String description) {
 	
 	}
 	
+	public static String findRoleNameByRoleId(String role_id) {
+	    try (Connection connection = DBConnection.getDBInstance()) {
+	        String find_role_sql = 
+	            "SELECT role_name FROM " + ApplicationDao.ROLES_TABLE + " WHERE role_id = ?";
+	            
+	        PreparedStatement preparedStmt = connection.prepareStatement(find_role_sql);
+	        preparedStmt.setString(1, role_id);
+
+	        ResultSet resultSet = preparedStmt.executeQuery();
+
+	        if (resultSet.next()) {
+
+	            return resultSet.getString("role_name");
+	        }
+	    } catch (SQLException e) {
+	        DBUtil.processException(e);
+	    } catch (ClassNotFoundException e) {
+	        e.printStackTrace();
+	    }
+
+	    return null;
+	}
+	
 
 }

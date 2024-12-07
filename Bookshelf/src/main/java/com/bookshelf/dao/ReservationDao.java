@@ -43,6 +43,55 @@ public class ReservationDao {
         }
         return null;
      }
+	
+	
+	public static int countReservationsByUserId(String user_id) {
+		
+	    int rvCount = 0;
 
+	    try (Connection connection = DBConnection.getDBInstance()) {
+	    	
+	        String count_reservations_sql = 
+	            "SELECT COUNT(*) AS reservation_count FROM bookshelf_reservation " +
+	            "WHERE user_id = ?";
+
+	        PreparedStatement preparedStmt = connection.prepareStatement(count_reservations_sql);
+	        preparedStmt.setString(1, user_id);
+
+	        ResultSet resultSet = preparedStmt.executeQuery();
+
+	        if (resultSet.next()) {
+	            rvCount = resultSet.getInt("reservation_count");
+	        }
+	    } catch (SQLException e) {
+	        DBUtil.processException(e);
+	    } catch (ClassNotFoundException e) {
+	        e.printStackTrace();
+	    }
+
+	    return rvCount;
+	}
+	
+
+	public static boolean deleteReservationsByUserId(String user_id) {
+	    try (Connection connection = DBConnection.getDBInstance()) {
+
+	        String delete_reservation_sql = "DELETE FROM bookshelf_reservation WHERE user_id = ?";
+	        
+	        PreparedStatement preparedStmt = connection.prepareStatement(delete_reservation_sql);
+	        preparedStmt.setString(1, user_id);
+
+
+	        int rowsDeleted = preparedStmt.executeUpdate();
+
+	        return rowsDeleted > 0;
+	        
+	    } catch (SQLException e) {
+	        DBUtil.processException(e);
+	    } catch (ClassNotFoundException e) {
+	        e.printStackTrace();
+	    }
+	    return false;
+	}
 
 }
