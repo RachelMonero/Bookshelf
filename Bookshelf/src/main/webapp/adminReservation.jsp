@@ -28,7 +28,7 @@
     </header>
 
  
-        <h2>User Manager</h2>
+        <h2>Reservation</h2>
         <c:if test="${not empty error}">
         <p class="error">${error}</p>
         </c:if>
@@ -39,38 +39,34 @@
            <thead>
              <tr>
 
-                <th>Username</th>
-                <th>Email</th>
-                <th>First Name</th>
-                <th>Last Name</th>
-                <th>Address</th>
-                <th>Role</th>
+                <th>Reservation ID</th>
+                <th>Date</th>
                 <th>Status</th>
-                <th>Reservations</th>
+                <th>Username</th>
+                <th>Book</th>
+                <th>Author</th>
+                <th>ISBN</th>
+                <th>Library</th>
                 <th></th>
 
              </tr>
            </thead>
          <tbody>
-            <c:forEach var="userManagerDto" items="${userManagerDtos}">
+            <c:forEach var="rvListDto" items="${rvListDtos}">
                 <tr>
 
-                    <td>${userManagerDto.user.username}</td>
-                    <td>${userManagerDto.user.email}</td>
-                    <td>${userManagerDto.user.first_name}</td>
-                    <td>${userManagerDto.user.last_name}</td>
-                    <td>${userManagerDto.address.address}, ${userManagerDto.address.city}, ${userManagerDto.address.province}, ${userManagerDto.address.country}, ${userManagerDto.address.postal_code}</td>
-                    <td>${userManagerDto.userRole.role_name}</td>
-                    <td>${userManagerDto.userRole.status}</td>
-                    <td>${userManagerDto.totalReservation}</td>
-                    <td>   
-                       <form action="UserManager" method="POST"> 
-
-                         <button type="submit" name="edit" id="edit"  value="${userManagerDto.user.user_id}">EDIT</button>   
-                         <button type="submit" name="delete" id="delete"  value="${userManagerDto.user.user_id}">DELETE</button>  
-                       </form>
-                    </td>   
+                    <td>${rvListDto.reservation.reservation_id}</td>
+                    <td>${rvListDto.reservation.reserved_date}</td>
+                    <td>${rvListDto.reservation.status}</td>
+                    <td>${rvListDto.user.username}</td>
+                    <td>${rvListDto.book.title}</td>
+                    <td>${rvListDto.book.author}</td>
+                    <td>${rvListDto.book.isbn}</td>                    
+                    <td>${rvListDto.library_name}</td>
+   
                 </tr>
+
+  
             </c:forEach>
          </tbody>
          </form >
