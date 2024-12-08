@@ -24,6 +24,7 @@ public class DBConnection {
 		ApplicationDao.getDao().createLibraryTable();
 		ApplicationDao.getDao().createLibraryBookTable();		
 		ApplicationDao.getDao().createReservationsTable();
+		ApplicationDao.getDao().createPasswordResetTable();
 
 
 		

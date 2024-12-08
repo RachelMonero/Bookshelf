@@ -24,7 +24,7 @@
                         <input type="password" id="password" name="password" required>
                         <div class="form-options">
                             <label><input type="checkbox" name="remember"> Remember me</label>
-                            <a href="#">Forgot password?</a>
+                            <a href="forgotPassword.jsp">Forgot password?</a>
                         </div>
                         <button type="submit" class="btn-login">Sign In</button>
                         <p class="signup-prompt">Don't have an account? <a href="register">Sign up</a></p>

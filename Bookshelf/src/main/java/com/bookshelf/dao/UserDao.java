@@ -366,5 +366,41 @@ public class UserDao {
 	    }
 	    return false;
 	}
+	
+	// Get user ID by email
+	public static String getUserIdByEmail(String email) {
+	    try (Connection connection = DBConnection.getDBInstance()) {
+	        String query = "SELECT user_id FROM bookshelf_user WHERE email = ?";
+	        PreparedStatement statement = connection.prepareStatement(query);
+	        statement.setString(1, email);
+
+	        ResultSet resultSet = statement.executeQuery();
+	        if (resultSet.next()) {
+	            return resultSet.getString("user_id");
+	        }
+	    } catch (SQLException e) {
+	        DBUtil.processException(e);
+	    } catch (ClassNotFoundException e) {
+	        e.printStackTrace();
+	    }
+	    return null;
+	}
+
+	// Update user password
+	public static void updatePassword(String userId, String newPassword) {
+	    try (Connection connection = DBConnection.getDBInstance()) {
+	        String query = "UPDATE bookshelf_user SET password = ? WHERE user_id = ?";
+	        PreparedStatement statement = connection.prepareStatement(query);
+	        statement.setString(1, newPassword); // Ideally hash the password before saving
+	        statement.setString(2, userId);
+
+	        statement.executeUpdate();
+	    } catch (SQLException e) {
+	        DBUtil.processException(e);
+	    } catch (ClassNotFoundException e) {
+	        e.printStackTrace();
+	    }
+	}
+
 
 }
