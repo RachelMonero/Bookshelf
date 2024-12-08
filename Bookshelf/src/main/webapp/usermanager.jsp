@@ -59,7 +59,7 @@
                     <td>${userManagerDto.user.email}</td>
                     <td>${userManagerDto.user.first_name}</td>
                     <td>${userManagerDto.user.last_name}</td>
-                    <td>${userManagerDto.address.city}, ${userManagerDto.address.province}</td>
+                    <td>${userManagerDto.address.address}, ${userManagerDto.address.city}, ${userManagerDto.address.province}, ${userManagerDto.address.country}, ${userManagerDto.address.postal_code}</td>
                     <td>${userManagerDto.userRole.role_name}</td>
                     <td>${userManagerDto.userRole.status}</td>
                     <td>${userManagerDto.totalReservation}</td>
