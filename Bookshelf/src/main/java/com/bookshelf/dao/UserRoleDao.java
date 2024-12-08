@@ -54,7 +54,10 @@ public class UserRoleDao {
 	public static UserRole findUserRoleById(String user_id) {
 	    try (Connection connection = DBConnection.getDBInstance()) {
 	        String find_user_role_sql = 
-	            "SELECT user_role_id, user_id, role_id, assigned_date, status FROM "+ ApplicationDao.USER_ROLE_TABLE + " WHERE user_id = ?";
+	            "SELECT ur.user_role_id, ur.user_id, ur.role_id, ur.assigned_date, ur.status, r.role_name " +
+	            "FROM " + ApplicationDao.USER_ROLE_TABLE + " ur " +
+	            "JOIN bookshelf_role r ON ur.role_id = r.role_id " +
+	            "WHERE ur.user_id = ? AND ur.status = 'Active'";
 	            
 	        PreparedStatement preparedStmt = connection.prepareStatement(find_user_role_sql);
 	        preparedStmt.setString(1, user_id);
@@ -62,15 +65,15 @@ public class UserRoleDao {
 	        ResultSet resultSet = preparedStmt.executeQuery();
 
 	        if (resultSet.next()) {
-
 	            String retrievedUserRoleId = resultSet.getString("user_role_id");
 	            String userId = resultSet.getString("user_id");
 	            String roleId = resultSet.getString("role_id");
 	            Timestamp assignedDate = resultSet.getTimestamp("assigned_date");
 	            String status = resultSet.getString("status");
+	            String roleName = resultSet.getString("role_name");
 
-
-	            return new UserRole(retrievedUserRoleId, userId, roleId, assignedDate, status);
+	            // Modify UserRole to include roleName (if not already there)
+	            return new UserRole(retrievedUserRoleId, userId, roleId, assignedDate, status, roleName);
 	        }
 	    } catch (SQLException e) {
 	        DBUtil.processException(e);
@@ -80,6 +83,7 @@ public class UserRoleDao {
 
 	    return null; 
 	}
+
 	
 	public static boolean deleteUserRolesByUserId(String user_id) {
 	    try (Connection connection = DBConnection.getDBInstance()) {

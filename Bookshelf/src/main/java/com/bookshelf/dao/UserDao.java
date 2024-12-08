@@ -95,6 +95,11 @@ public class UserDao {
                 updateStatement.setString(1, user_id);
                 updateStatement.executeUpdate();
 
+                String updateRoleSql = "UPDATE bookshelf_user_role SET status = 'Active' WHERE user_id = ?";
+                PreparedStatement updateRoleStatement = connection.prepareStatement(updateRoleSql);
+                updateRoleStatement.setString(1, user_id);
+                updateRoleStatement.executeUpdate();
+                
                 String updateVerificationSql = "UPDATE bookshelf_verification SET status = 'completed' WHERE verification_code = ?";
                 PreparedStatement updateVerificationStmt = connection.prepareStatement(updateVerificationSql);
                 updateVerificationStmt.setString(1, verification_code);
@@ -174,10 +179,12 @@ public class UserDao {
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
                 String userId = resultSet.getString("user_id");
+                String username = resultSet.getString("username");
                 String firstName = resultSet.getString("first_name");
                 String lastName = resultSet.getString("last_name");
+                boolean isVerified = resultSet.getBoolean("is_verified");
 
-                return new User(userId, firstName, lastName, true);
+                return new User(userId, username, firstName, lastName, isVerified);
             }
         } catch (SQLException e) {
             DBUtil.processException(e);

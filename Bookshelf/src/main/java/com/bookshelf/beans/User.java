@@ -17,6 +17,14 @@ public class User {
     	this.setIs_verified(is_verified);
     }
     
+    public User(String user_id, String username, String first_name, String last_name, boolean is_verified) {
+    	this.setUser_id(user_id);
+    	this.setUsername(username);
+    	this.setFirst_name(first_name);
+    	this.setLast_name(last_name);
+    	this.setIs_verified(is_verified);
+    }
+    
     public User(String user_id, String username, String email, String password, String first_name, String last_name, String address_id, boolean is_verified) {
     this.user_id = user_id;
     this.username = username;
