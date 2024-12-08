@@ -84,6 +84,32 @@ public class LibraryDao {
 
 	    return false;
 	}
+	
+	public static String getLibraryNameById(String library_id) {
+		String query = "SELECT library_name FROM "+ ApplicationDao.LIBRARY_TABLE + " WHERE library_id = ?";
+		
+		try (Connection connection = DBConnection.getDBInstance()) {
+	            
+	        PreparedStatement preparedStmt = connection.prepareStatement(query);
+	        preparedStmt.setString(1, library_id);
+	       
+	       
+	        ResultSet resultSet = preparedStmt.executeQuery();
+
+	        if (resultSet.next()) {
+
+	            String library_name = resultSet.getString("library_name");
+
+	            return library_name;
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    } catch (ClassNotFoundException e) {
+	        e.printStackTrace();
+	    }
+
+	    return null;
+	}
 
 
 }

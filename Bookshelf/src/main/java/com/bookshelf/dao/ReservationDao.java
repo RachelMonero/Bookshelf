@@ -5,7 +5,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.List;
+import java.util.ArrayList;
 
+import com.bookshelf.beans.Reservation;
+import com.bookshelf.beans.User;
 import com.bookshelf.connection.DBConnection;
 import com.bookshelf.connection.DBUtil;
 import com.bookshelf.libs.UUIDGenerator;
@@ -92,6 +96,36 @@ public class ReservationDao {
 	        e.printStackTrace();
 	    }
 	    return false;
+	}
+	
+	public static List<Reservation> getAllReservation() {
+		
+		List<Reservation> rvList = new ArrayList<>();
+		
+		try (Connection connection = DBConnection.getDBInstance()){
+			
+			String getAllRvSql = "SELECT * FROM bookshelf_reservation";
+			PreparedStatement preparedStmt = connection.prepareStatement(getAllRvSql);
+			
+			ResultSet resultSet = preparedStmt.executeQuery();
+			
+			while (resultSet.next()) {
+                String rv_id = resultSet.getString("reservation_id");
+                String user_id = resultSet.getString("user_id");
+                String lib_book_id = resultSet.getString("library_book_id");
+                Timestamp rv_date = resultSet.getTimestamp("reserved_date");
+                String status = resultSet.getString("status");
+
+                Reservation rv = new Reservation(rv_id,user_id,lib_book_id,rv_date,status);
+                rvList.add(rv);
+            }
+			
+		}catch (SQLException e) {
+	        DBUtil.processException(e);
+	    } catch (ClassNotFoundException e) {
+	        e.printStackTrace();
+	    }
+	    return rvList;
 	}
 
 }
