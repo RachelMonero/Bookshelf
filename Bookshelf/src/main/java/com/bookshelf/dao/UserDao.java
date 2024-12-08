@@ -164,6 +164,13 @@ public class UserDao {
         return exists;
     }
 
+    
+    
+    
+    
+    
+    
+    
 	public static User authenticateUser(String email, String password) {
 		try (Connection connection = DBConnection.getDBInstance()) {
 	        String query = "SELECT * FROM bookshelf_user WHERE email = ? AND password = ? AND is_verified = TRUE";
@@ -193,9 +200,12 @@ public class UserDao {
 
 	    try (Connection connection = DBConnection.getDBInstance();
 	         PreparedStatement statement = connection.prepareStatement(query)) {
-	        statement.setString(1, email);
+	      
+	    	// Set the email parameter
+	    	statement.setString(1, email);
 
-	        try (ResultSet rs = statement.executeQuery()) {
+	    	// Execute the query
+	    	try (ResultSet rs = statement.executeQuery()) {
 	            if (rs.next()) {
 	                userId = rs.getString("user_id");
 	                if (userId == null || userId.isEmpty()) {
@@ -205,9 +215,12 @@ public class UserDao {
 	                System.out.println("No user found for email: " + email);
 	            }
 	        }
+	    	
 	    } catch (SQLException e) {
+	    	System.err.println("SQL Exception occurred while finding user ID by email.");
 	        DBUtil.processException(e); 
 	    } catch (ClassNotFoundException e) {
+	    	System.err.println("Database connection class not found.");
 	        e.printStackTrace();
 	    }
 
@@ -215,6 +228,7 @@ public class UserDao {
 	}
 	
 	public static List<User> getAllUsers(){		
+
 		List<User> users = new ArrayList<>();
 		
 		try (Connection connection = DBConnection.getDBInstance()) {
@@ -223,14 +237,16 @@ public class UserDao {
 
 	        ResultSet resultSet = preparedStmt.executeQuery();
 	        while (resultSet.next()) {	            
-	            String user_id = resultSet.getString("user_id");
-	            String email = resultSet.getString("email");
+	           
+	        	String user_id = resultSet.getString("user_id");	           
+	        	String email = resultSet.getString("email");
 	            String username = resultSet.getString("username");
 	            String password = resultSet.getString("password");
 	            String first_name = resultSet.getString("first_name");
 	            String last_name = resultSet.getString("last_name");
 	            String address_id = resultSet.getString("address_id");
 	            boolean is_verified = resultSet.getBoolean("is_verified");
+	            
 	            
 	            User user = new User(user_id, username, email, password, first_name, last_name, address_id, is_verified);
 	            users.add(user);
@@ -241,7 +257,8 @@ public class UserDao {
 	        e.printStackTrace();
 	    }
 		
-	    return users;		
+	    return users;	
+	    
 	}
 	
 	public static boolean deleteUserByUserId(String user_id) {
@@ -249,7 +266,8 @@ public class UserDao {
 	    
 	    try (Connection connection = DBConnection.getDBInstance();
 	         PreparedStatement preparedStmt = connection.prepareStatement(query)) {
-	         preparedStmt.setString(1, user_id);
+	        
+	    	preparedStmt.setString(1, user_id);
 
 	        int rowsDeleted = preparedStmt.executeUpdate();
 
@@ -264,13 +282,16 @@ public class UserDao {
 	    return false; 
 	}
 
+	
 	public static String findAddressId(String user_id) {	
-	    String address_id = null;
+	  
+		String address_id = null;
 	    String query = "SELECT address_id FROM bookshelf_user WHERE user_id = ?";
 
 	    try (Connection connection = DBConnection.getDBInstance();
 	         PreparedStatement statement = connection.prepareStatement(query)) {
-	        statement.setString(1, user_id);
+	       
+	    	statement.setString(1, user_id);
 
 	        try (ResultSet rs = statement.executeQuery()) {
 	            if (rs.next()) {
@@ -282,9 +303,12 @@ public class UserDao {
 	                System.out.println("No user found for user_id: " + user_id);
 	            }
 	        }
+	    
 	    } catch (SQLException e) {
+	    	System.err.println("SQL Exception occurred while finding address_id by user_id.");
 	        DBUtil.processException(e); 
 	    } catch (ClassNotFoundException e) {
+	    	System.err.println("Database connection class not found.");
 	        e.printStackTrace();
 	    }
 
@@ -298,13 +322,16 @@ public class UserDao {
 
 	    try (Connection connection = DBConnection.getDBInstance();
 	         PreparedStatement preparedStmt = connection.prepareStatement(query)) {
-	        preparedStmt.setString(1, address_id);
+	       
+	    	preparedStmt.setString(1, address_id);
 
 	        ResultSet resultSet = preparedStmt.executeQuery();
 
 	        if (resultSet.next()) {
-	            userCount = resultSet.getInt("user_count");
+	           
+	        	userCount = resultSet.getInt("user_count");
 	        }
+	    
 	    } catch (SQLException e) {
 	        DBUtil.processException(e);
 	    } catch (ClassNotFoundException e) {
