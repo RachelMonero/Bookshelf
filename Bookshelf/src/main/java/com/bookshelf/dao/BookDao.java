@@ -1,7 +1,10 @@
 package com.bookshelf.dao;
 
 
+import com.bookshelf.beans.Book;
+import com.bookshelf.beans.User;
 import com.bookshelf.connection.DBConnection;
+import com.bookshelf.connection.DBUtil;
 import com.bookshelf.dtos.BookDto;
 
 import java.sql.*;
@@ -123,5 +126,32 @@ public class BookDao {
         }
 
         return books;
+    }
+    
+    public static Book getBookById(String book_id) {
+    	try (Connection connection = DBConnection.getDBInstance()) {
+            String query = "SELECT * FROM bookshelf_book WHERE book_id = ?";
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setString(1, book_id);
+
+
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                String current_book_id = resultSet.getString("book_id");
+                String title = resultSet.getString("title");
+                String author = resultSet.getString("author");
+                String isbn = resultSet.getString("isbn");
+                int publishedYear = resultSet.getInt("published_year");
+                String genre = resultSet.getString("genre_id");;
+                
+
+                return new Book(current_book_id, title, author, isbn, publishedYear,genre);
+            }
+        } catch (SQLException e) {
+            DBUtil.processException(e);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

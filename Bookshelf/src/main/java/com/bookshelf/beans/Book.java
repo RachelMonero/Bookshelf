@@ -7,16 +7,16 @@ public class Book {
     private String isbn;
     private int publishedYear;
     private String genre;
-    private boolean availability;
+   // private boolean availability;
 
-    public Book(String book_id, String title, String author, String isbn, int publishedYear, String genre, boolean availability) {
+    public Book(String book_id, String title, String author, String isbn, int publishedYear, String genre) {
         this.book_id = book_id;
         this.title = title;
         this.author = author;
         this.isbn = isbn;
         this.publishedYear = publishedYear;
         this.genre = genre;
-        this.availability = availability;
+
     }
 
     // Getters and Setters
@@ -32,6 +32,6 @@ public class Book {
     public void setPublishedYear(int publishedYear) { this.publishedYear = publishedYear; }
     public String getGenre() { return genre; }
     public void setGenre(String genre) { this.genre = genre; }
-    public boolean getAvailability() {return availability;}
-    public void setAvailability(boolean availability) {this.availability = availability;}
+   // public boolean getAvailability() {return availability;}
+   // public void setAvailability(boolean availability) {this.availability = availability;}
 }
