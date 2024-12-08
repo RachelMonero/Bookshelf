@@ -25,6 +25,7 @@ public class ApplicationDao {
     public static final String GENRE_TABLE = "bookshelf_genre";
     public static final String RESERVATIONS_TABLE = "bookshelf_reservation";
     public static final String ADDRESS_TABLE = "bookshelf_address";
+    public static final String PASSWORD_RESET_TABLE = "bookshelf_password_reset";
 
     private ApplicationDao() {}
 
@@ -73,6 +74,31 @@ public class ApplicationDao {
             e.printStackTrace();
         }
     }
+    
+    public void createPasswordResetTable() {
+        try (
+            Connection conn = DBConnection.getDBInstance();
+            Statement stmt = conn.createStatement();
+        ) {
+            if (!tableExists(conn, "bookshelf_password_reset")) {
+                System.out.print("Creating Password Reset Table...");
+                String sql = "CREATE TABLE IF NOT EXISTS bookshelf_password_reset ("
+                        + "reset_id VARCHAR(36) NOT NULL PRIMARY KEY, "
+                        + "user_id VARCHAR(36) NOT NULL, "
+                        + "token VARCHAR(64) NOT NULL UNIQUE, "
+                        + "created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+                        + "status ENUM('pending', 'completed') NOT NULL DEFAULT 'pending', "
+                        + "FOREIGN KEY (user_id) REFERENCES bookshelf_user(user_id) ON DELETE CASCADE)";
+                stmt.executeUpdate(sql);
+                System.out.println("Created Password Reset Table");
+            }
+        } catch (SQLException e) {
+            DBUtil.processException(e);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     public void createRoleTable() {
         try (
