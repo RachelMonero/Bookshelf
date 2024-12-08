@@ -313,4 +313,58 @@ public class UserDao {
 
         return userCount;
     }
+    public static User getUserById(String user_id) { 
+        try (Connection connection = DBConnection.getDBInstance()) {
+            String query = "SELECT * FROM bookshelf_user WHERE user_id = ?";
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setString(1, user_id);
+
+            ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+
+                String current_user_id = resultSet.getString("user_id");
+                String email = resultSet.getString("email");
+                String username = resultSet.getString("username");
+                String password = resultSet.getString("password");
+                String first_name = resultSet.getString("first_name");
+                String last_name = resultSet.getString("last_name");
+                String address_id = resultSet.getString("address_id");
+                boolean is_verified = resultSet.getBoolean("is_verified");
+
+                User user = new User(current_user_id, username, email, password, first_name, last_name, address_id, is_verified);
+
+                return user;
+            }
+        } catch (SQLException e) {
+            DBUtil.processException(e);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+	// update is_verified status
+	public static boolean updateIsVerified (String user_id, String new_status) {
+		Boolean is_verified =  Boolean.parseBoolean(new_status);
+
+	    try (Connection connection = DBConnection.getDBInstance()) {
+	        String update_user_sql = "UPDATE bookshelf_user SET is_verified = ? WHERE user_id = ?";
+	        PreparedStatement preparedStmt = connection.prepareStatement(update_user_sql);
+	        preparedStmt.setBoolean(1, is_verified);
+	        preparedStmt.setString(2, user_id);
+
+	        int rowsUpdated = preparedStmt.executeUpdate();
+
+	        if (rowsUpdated > 0) {
+	            System.out.println("User verification status updated successfully.");
+	            return true;
+	        }
+	    } catch (SQLException e) {
+	        DBUtil.processException(e);
+	    } catch (ClassNotFoundException e) {
+	        e.printStackTrace();
+	    }
+	    return false;
+	}
+
 }
