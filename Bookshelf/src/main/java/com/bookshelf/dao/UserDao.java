@@ -20,9 +20,8 @@ import javax.mail.MessagingException;
 public class UserDao {
 
     // Create user
-	public static String createUser(String email, String username, String password, String first_name, String last_name, String address_id) {
+    public static String createUser(String email, String username, String password, String first_name, String last_name, String address_id) {
         UUIDGenerator uuidGenerator = new UUIDGenerator();
-        // Create user_id
         String user_id = uuidGenerator.generateUUID();
         Boolean is_verified = false;
 
@@ -68,7 +67,7 @@ public class UserDao {
             statement.setString(1, verification_id);
             statement.setString(2, user_id);
             statement.setString(3, verification_code);
-            statement.setString(4, "email"); 
+            statement.setString(4, "email");
             statement.setTimestamp(5, new Timestamp(System.currentTimeMillis()));
             statement.setString(6, "pending");
 
@@ -80,11 +79,9 @@ public class UserDao {
         }
     }
 
-
     // Verify user by token
     public static boolean verifyUserByToken(String verification_code) {
         try (Connection connection = DBConnection.getDBInstance()) {
-            // Find the user ID using the verification code
             String query = "SELECT user_id FROM bookshelf_verification WHERE verification_code = ?";
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setString(1, verification_code);
@@ -93,13 +90,11 @@ public class UserDao {
             if (resultSet.next()) {
                 String user_id = resultSet.getString("user_id");
 
-                //Update user's is_verified status in bookshelf_user table
                 String updateSql = "UPDATE bookshelf_user SET is_verified = TRUE WHERE user_id = ?";
                 PreparedStatement updateStatement = connection.prepareStatement(updateSql);
                 updateStatement.setString(1, user_id);
                 updateStatement.executeUpdate();
 
-                //Mark the verification as completed in bookshelf_verification table
                 String updateVerificationSql = "UPDATE bookshelf_verification SET status = 'completed' WHERE verification_code = ?";
                 PreparedStatement updateVerificationStmt = connection.prepareStatement(updateVerificationSql);
                 updateVerificationStmt.setString(1, verification_code);
@@ -114,7 +109,6 @@ public class UserDao {
         }
         return false;
     }
-
 
     // Check if username exists
     public static boolean usernameExists(String username) {
@@ -151,7 +145,7 @@ public class UserDao {
             preparedStmt.setString(1, email);
 
             ResultSet rs = preparedStmt.executeQuery();
-            
+
             if (rs != null && rs.next()) {
                 String userId = rs.getString("user_id");
                 if (userId != null && !userId.isEmpty()) {
@@ -170,175 +164,153 @@ public class UserDao {
         return exists;
     }
 
-    
-	public static User authenticateUser(String email, String password) {
-		try (Connection connection = DBConnection.getDBInstance()) {
-	        String query = "SELECT * FROM bookshelf_user WHERE email = ? AND password = ? AND is_verified = TRUE";
-	        PreparedStatement statement = connection.prepareStatement(query);
-	        statement.setString(1, email);
-	        statement.setString(2, password);
+    public static User authenticateUser(String email, String password) {
+        try (Connection connection = DBConnection.getDBInstance()) {
+            String query = "SELECT * FROM bookshelf_user WHERE email = ? AND password = ? AND is_verified = TRUE";
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setString(1, email);
+            statement.setString(2, password);
 
-	        ResultSet resultSet = statement.executeQuery();
-	        if (resultSet.next()) {
-	            String userId = resultSet.getString("user_id");
-	            String firstName = resultSet.getString("first_name");
-	            String lastName = resultSet.getString("last_name");
-	            
-	            return new User(userId, firstName, lastName, true);
-	        }
-	    } catch (SQLException e) {
-	        DBUtil.processException(e);
-	    } catch (ClassNotFoundException e) {
-	        e.printStackTrace();
-	    }
-	    return null;
-	}
-	
-	public static String findIdByEmail(String email) {
-	    String userId = null;
-	    String query = "SELECT user_id FROM bookshelf_user WHERE email = ?";
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                String userId = resultSet.getString("user_id");
+                String firstName = resultSet.getString("first_name");
+                String lastName = resultSet.getString("last_name");
 
-	    try (Connection connection = DBConnection.getDBInstance();
-	         PreparedStatement statement = connection.prepareStatement(query)) {
+                return new User(userId, firstName, lastName, true);
+            }
+        } catch (SQLException e) {
+            DBUtil.processException(e);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
-	        // Set the email parameter
-	        statement.setString(1, email);
+    public static String findIdByEmail(String email) {
+        String userId = null;
+        String query = "SELECT user_id FROM bookshelf_user WHERE email = ?";
 
-	        // Execute the query
-	        try (ResultSet rs = statement.executeQuery()) {
-	            if (rs.next()) {
-	                userId = rs.getString("user_id");
-	                if (userId == null || userId.isEmpty()) {
-	                    System.out.println("User ID is empty or null for email: " + email);
-	                }
-	            } else {
-	                System.out.println("No user found for email: " + email);
-	            }
-	        }
+        try (Connection connection = DBConnection.getDBInstance();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, email);
 
-	    } catch (SQLException e) {
-	        System.err.println("SQL Exception occurred while finding user ID by email.");
-	        DBUtil.processException(e); 
-	    } catch (ClassNotFoundException e) {
-	        System.err.println("Database connection class not found.");
-	        e.printStackTrace();
-	    }
+            try (ResultSet rs = statement.executeQuery()) {
+                if (rs.next()) {
+                    userId = rs.getString("user_id");
+                    if (userId == null || userId.isEmpty()) {
+                        System.out.println("User ID is empty or null for email: " + email);
+                    }
+                } else {
+                    System.out.println("No user found for email: " + email);
+                }
+            }
+        } catch (SQLException e) {
+            DBUtil.processException(e);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
 
-	    return userId;
-	}
-	
-	public static List<User> getAllUsers(){
-		
-		List<User> users = new ArrayList<>();
-		
-		try (Connection connection = DBConnection.getDBInstance()) {
-	        String retrieve_users_sql = "SELECT user_id, email, username, password, first_name, last_name, address_id, is_verified FROM bookshelf_user";
-	        PreparedStatement preparedStmt = connection.prepareStatement(retrieve_users_sql);
+        return userId;
+    }
 
-	        ResultSet resultSet = preparedStmt.executeQuery();
-	        while (resultSet.next()) {
-	            
-	            String user_id = resultSet.getString("user_id");
-	            String email = resultSet.getString("email");
-	            String username = resultSet.getString("username");
-	            String password = resultSet.getString("password");
-	            String first_name = resultSet.getString("first_name");
-	            String last_name = resultSet.getString("last_name");
-	            String address_id = resultSet.getString("address_id");
-	            boolean is_verified = resultSet.getBoolean("is_verified");
+    public static List<User> getAllUsers() {
+        List<User> users = new ArrayList<>();
 
-	            
-	            User user = new User(user_id, username, email, password, first_name, last_name, address_id, is_verified);
-	            users.add(user);
-	        }
-	    } catch (SQLException e) {
-	        DBUtil.processException(e);
-	    } catch (ClassNotFoundException e) {
-	        e.printStackTrace();
-	    }
+        try (Connection connection = DBConnection.getDBInstance()) {
+            String retrieve_users_sql = "SELECT user_id, email, username, password, first_name, last_name, address_id, is_verified FROM bookshelf_user";
+            PreparedStatement preparedStmt = connection.prepareStatement(retrieve_users_sql);
 
-	    return users;
-		
-	}
-	
-	public static boolean deleteUserByUserId(String user_id) {
-	    String query = "DELETE FROM bookshelf_user WHERE user_id = ?";
+            ResultSet resultSet = preparedStmt.executeQuery();
+            while (resultSet.next()) {
+                String user_id = resultSet.getString("user_id");
+                String email = resultSet.getString("email");
+                String username = resultSet.getString("username");
+                String password = resultSet.getString("password");
+                String first_name = resultSet.getString("first_name");
+                String last_name = resultSet.getString("last_name");
+                String address_id = resultSet.getString("address_id");
+                boolean is_verified = resultSet.getBoolean("is_verified");
 
-	    try (Connection connection = DBConnection.getDBInstance();
-	         PreparedStatement preparedStmt = connection.prepareStatement(query)) {
+                User user = new User(user_id, username, email, password, first_name, last_name, address_id, is_verified);
+                users.add(user);
+            }
+        } catch (SQLException e) {
+            DBUtil.processException(e);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
 
-	        preparedStmt.setString(1, user_id);
+        return users;
+    }
 
-	        int rowsDeleted = preparedStmt.executeUpdate();
+    public static boolean deleteUserByUserId(String user_id) {
+        String query = "DELETE FROM bookshelf_user WHERE user_id = ?";
 
-	        return rowsDeleted > 0;
+        try (Connection connection = DBConnection.getDBInstance();
+             PreparedStatement preparedStmt = connection.prepareStatement(query)) {
+            preparedStmt.setString(1, user_id);
 
-	    } catch (SQLException e) {
-	        DBUtil.processException(e);
-	    } catch (ClassNotFoundException e) {
-	        e.printStackTrace();
-	    }
+            int rowsDeleted = preparedStmt.executeUpdate();
 
-	    return false; 
-	}
+            return rowsDeleted > 0;
 
-	
-	public static String findAddressId(String user_id) {
-		
-	    String address_id = null;
-	    String query = "SELECT address_id FROM bookshelf_user WHERE user_id = ?";
+        } catch (SQLException e) {
+            DBUtil.processException(e);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
 
-	    try (Connection connection = DBConnection.getDBInstance();
-	         PreparedStatement statement = connection.prepareStatement(query)) {
+        return false;
+    }
 
-	        statement.setString(1, user_id);
+    public static String findAddressId(String user_id) {
+        String address_id = null;
+        String query = "SELECT address_id FROM bookshelf_user WHERE user_id = ?";
 
-	        try (ResultSet rs = statement.executeQuery()) {
-	            if (rs.next()) {
-	                address_id = rs.getString("address_id");
-	                if (address_id == null || address_id.isEmpty()) {
-	                    System.out.println("address_id is empty or null for user_id: " + address_id);
-	                }
-	            } else {
-	                System.out.println("No user found for user_id: " + user_id);
-	            }
-	        }
+        try (Connection connection = DBConnection.getDBInstance();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, user_id);
 
-	    } catch (SQLException e) {
-	        System.err.println("SQL Exception occurred while finding address_id by user_id.");
-	        DBUtil.processException(e); 
-	    } catch (ClassNotFoundException e) {
-	        System.err.println("Database connection class not found.");
-	        e.printStackTrace();
-	    }
+            try (ResultSet rs = statement.executeQuery()) {
+                if (rs.next()) {
+                    address_id = rs.getString("address_id");
+                    if (address_id == null || address_id.isEmpty()) {
+                        System.out.println("address_id is empty or null for user_id: " + address_id);
+                    }
+                } else {
+                    System.out.println("No user found for user_id: " + user_id);
+                }
+            }
+        } catch (SQLException e) {
+            DBUtil.processException(e);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
 
-	    return address_id;
-	}
-	
-	public static int countUsersByAddressId(String address_id) {
-	    int userCount = 0;
+        return address_id;
+    }
 
-	    String query = "SELECT COUNT(*) AS user_count FROM bookshelf_user WHERE address_id = ?";
+    public static int countUsersByAddressId(String address_id) {
+        int userCount = 0;
 
-	    try (Connection connection = DBConnection.getDBInstance();
-	         PreparedStatement preparedStmt = connection.prepareStatement(query)) {
+        String query = "SELECT COUNT(*) AS user_count FROM bookshelf_user WHERE address_id = ?";
 
-	        preparedStmt.setString(1, address_id);
+        try (Connection connection = DBConnection.getDBInstance();
+             PreparedStatement preparedStmt = connection.prepareStatement(query)) {
+            preparedStmt.setString(1, address_id);
 
-	        ResultSet resultSet = preparedStmt.executeQuery();
+            ResultSet resultSet = preparedStmt.executeQuery();
 
-	        if (resultSet.next()) {
+            if (resultSet.next()) {
+                userCount = resultSet.getInt("user_count");
+            }
+        } catch (SQLException e) {
+            DBUtil.processException(e);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
 
-	            userCount = resultSet.getInt("user_count");
-	        }
-
-	    } catch (SQLException e) {
-	        DBUtil.processException(e);
-	    } catch (ClassNotFoundException e) {
-	        e.printStackTrace();
-	    }
-
-	    return userCount; 
-	}
-	
+        return userCount;
+    }
 }

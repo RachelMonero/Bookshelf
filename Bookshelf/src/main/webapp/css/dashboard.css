@@ -192,3 +192,50 @@
 	text-align: right;
 }
 
+/* Hide input fields by default */
+.form-control {
+    display: none;
+}
+
+/* Style for the Edit button */
+.btn-edit {
+    margin-left: 10px;
+    background-color: black;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.btn-edit:hover {
+    background-color: #333333;
+}
+
+/* Style for the Update button */
+.btn-update {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+.btn-update:hover {
+    background-color: #0056b3;
+}
+
+/* Feedback messages */
+.success-message {
+    color: green;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.error-message {
+    color: red;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
