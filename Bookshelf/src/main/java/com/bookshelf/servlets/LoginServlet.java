@@ -5,6 +5,7 @@ import com.bookshelf.dao.UserDao;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -21,6 +22,7 @@ public class LoginServlet extends HttpServlet {
 
         String email = request.getParameter("email").toLowerCase();
         String password = request.getParameter("password");
+        String rememberMe = request.getParameter("remember"); 
 
         try {
             // Authenticate user
@@ -62,6 +64,31 @@ public class LoginServlet extends HttpServlet {
             System.out.println("loggedInUser = " + session.getAttribute("loggedInUser"));
             System.out.println("userEmail = " + session.getAttribute("userEmail"));
 
+            // Added "Remember Me" feature
+            if ("on".equals(rememberMe)) {
+                // Create cookies for email and password
+                Cookie emailCookie = new Cookie("userEmail", email);
+                Cookie passwordCookie = new Cookie("userPassword", password);
+
+                // Set cookie expiry to 7 days
+                emailCookie.setMaxAge(7 * 24 * 60 * 60);
+                passwordCookie.setMaxAge(7 * 24 * 60 * 60);
+
+                // Set secure and HttpOnly flags (for security)
+                emailCookie.setHttpOnly(true);
+                passwordCookie.setHttpOnly(true);
+
+                // Add cookies to the response
+                response.addCookie(emailCookie);
+                response.addCookie(passwordCookie);
+
+                System.out.println("Remember Me: Cookies set for email and password.");
+                
+	            } else {
+	            	
+	                System.out.println("Remember Me not selected.");
+	            }
+            
             // Redirect to dashboard
             response.sendRedirect("dashboard.jsp");
 
