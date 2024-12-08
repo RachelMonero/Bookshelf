@@ -9,17 +9,32 @@ public class UserRole {
 	private String role_id;
 	private Timestamp assigned_date;
 	private String status;
+	private String roleName;
 
 
 
-    public UserRole(String user_role_id, String user_id, String role_id,Timestamp assigned_date, String status) {
+    public UserRole(String user_role_id, String user_id, String role_id,Timestamp assigned_date, String status, String roleName) {
     	super();
     	this.user_role_id= user_role_id;
     	this.user_id=user_id;
     	this.role_id = role_id;
     	this.assigned_date = assigned_date;
     	this.status = status;
+    	this.roleName = roleName;
     }
+    
+    @Override
+    public String toString() {
+        return "UserRole{" +
+               "user_role_id='" + user_role_id + '\'' +
+               ", user_id='" + user_id + '\'' +
+               ", role_id='" + role_id + '\'' +
+               ", assigned_date=" + assigned_date +
+               ", status='" + status + '\'' +
+               ", roleName='" + roleName + '\'' +
+               '}';
+    }
+    
     public void setUser_role_id() {
     	this.user_role_id=user_role_id;
     }
@@ -52,5 +67,11 @@ public class UserRole {
     public String getStatus() {
     	return status;
     }
+	public String getRoleName() {
+		return roleName;
+	}
+	public void setRoleName(String roleName) {
+		this.roleName = roleName;
+	}
 
 }

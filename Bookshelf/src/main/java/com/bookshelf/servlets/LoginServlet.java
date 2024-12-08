@@ -1,11 +1,12 @@
 package com.bookshelf.servlets;
 
 import com.bookshelf.beans.User;
+import com.bookshelf.beans.UserRole;
 import com.bookshelf.dao.UserDao;
+import com.bookshelf.dao.UserRoleDao;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -22,7 +23,6 @@ public class LoginServlet extends HttpServlet {
 
         String email = request.getParameter("email").toLowerCase();
         String password = request.getParameter("password");
-        String rememberMe = request.getParameter("remember"); 
 
         try {
             // Authenticate user
@@ -46,6 +46,8 @@ public class LoginServlet extends HttpServlet {
                 request.getRequestDispatcher("index.jsp").forward(request, response);
                 return;
             }
+            
+            UserRole role = UserRoleDao.findUserRoleById(userId);
 
             // Start session and set user attributes
             HttpSession session = request.getSession();
@@ -53,45 +55,31 @@ public class LoginServlet extends HttpServlet {
             session.setAttribute("loggedInUserId", userId); 
             session.setAttribute("loggedInUser", user.getUsername()); 
             session.setAttribute("email", email);
+            session.setAttribute("role", role.getRoleName());
 
             System.out.println("Login successful - User ID: " + userId);
             System.out.println("Login successful - Username: " + user.getUsername());
             System.out.println("Login successful - Email: " + email);
+            System.out.println("Login successful - Role: " + role.getRoleName());
 
             // Verify session attributes
             System.out.println("Session Attributes:");
-            System.out.println("loggedInUserId = " + session.getAttribute("loggedInUserId"));
-            System.out.println("loggedInUser = " + session.getAttribute("loggedInUser"));
-            System.out.println("userEmail = " + session.getAttribute("userEmail"));
+            System.out.println("Logged In UserId = " + session.getAttribute("loggedInUserId"));
+            System.out.println("Logged In User = " + session.getAttribute("loggedInUser"));
+            System.out.println("User Email = " + session.getAttribute("email"));
+            System.out.println("User Role = " + session.getAttribute("role"));
 
-            // Added "Remember Me" feature
-            if ("on".equals(rememberMe)) {
-                // Create cookies for email and password
-                Cookie emailCookie = new Cookie("userEmail", email);
-                Cookie passwordCookie = new Cookie("userPassword", password);
-
-                // Set cookie expiry to 7 days
-                emailCookie.setMaxAge(7 * 24 * 60 * 60);
-                passwordCookie.setMaxAge(7 * 24 * 60 * 60);
-
-                // Set secure and HttpOnly flags (for security)
-                emailCookie.setHttpOnly(true);
-                passwordCookie.setHttpOnly(true);
-
-                // Add cookies to the response
-                response.addCookie(emailCookie);
-                response.addCookie(passwordCookie);
-
-                System.out.println("Remember Me: Cookies set for email and password.");
-                
-	            } else {
-	            	
-	                System.out.println("Remember Me not selected.");
-	            }
-            
-            // Redirect to dashboard
-            response.sendRedirect("dashboard.jsp");
-
+            // Redirect to appropriate page based on role
+            if ("sysAdmin".equalsIgnoreCase(role.getRoleName())) {
+                response.sendRedirect("adminDashboard.jsp");
+            } else if ("librarian".equalsIgnoreCase(role.getRoleName())) {
+                response.sendRedirect("libDashboard.jsp");
+            } else if ("member".equalsIgnoreCase(role.getRoleName())) {
+                response.sendRedirect("dashboard.jsp");
+            } else {
+                request.setAttribute("message", "Role not recognized. Contact the administrator.");
+                request.getRequestDispatcher("index.jsp").forward(request, response);
+            }
         } catch (Exception e) {
             System.out.println("LoginServlet: Exception occurred during login process.");
             e.printStackTrace();
