@@ -18,12 +18,28 @@
                 <div class="form-section">
                     <h2>Sign In</h2>
                     <form action="login" method="POST">
+                        <%
+                            String userEmail = "";
+                            String userPassword = "";
+
+                            // Retrieve cookies
+                            if (request.getCookies() != null) {
+                                for (Cookie cookie : request.getCookies()) {
+                                    if ("userEmail".equals(cookie.getName())) {
+                                        userEmail = cookie.getValue();
+                                    }
+                                    if ("userPassword".equals(cookie.getName())) {
+                                        userPassword = cookie.getValue();
+                                    }
+                                }
+                            }
+                        %>
                         <label for="email">Email</label>
-                        <input type="email" id="email" name="email" required>
+                        <input type="email" id="email" name="email" value="<%= userEmail %>" required>
                         <label for="password">Password</label>
-                        <input type="password" id="password" name="password" required>
+                        <input type="password" id="password" name="password" value="<%= userPassword %>" required>
                         <div class="form-options">
-                            <label><input type="checkbox" name="remember"> Remember me</label>
+                            <label><input type="checkbox" name="remember" <% if (!userEmail.isEmpty()) { %>checked<% } %>> Remember me</label>
                             <a href="forgotPassword.jsp">Forgot password?</a>
                         </div>
                         <button type="submit" class="btn-login">Sign In</button>
