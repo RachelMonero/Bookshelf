@@ -54,6 +54,24 @@ public class LibraryBookDao {
 	        }
 	        return null;
 	}
-	
+	public static int countLibByBookId(String book_id) {
+	    int count = 0;
+	    try (Connection connection = DBConnection.getDBInstance()) {
+
+	        String query = "SELECT COUNT(DISTINCT library_id) AS library_count FROM bookshelf_library_book WHERE book_id = ?";
+	        PreparedStatement statement = connection.prepareStatement(query);
+	        statement.setString(1, book_id);
+
+	        ResultSet resultSet = statement.executeQuery();
+	        if (resultSet.next()) {
+	            count = resultSet.getInt("library_count");
+	        }
+	    } catch (SQLException e) {
+	        DBUtil.processException(e);
+	    } catch (ClassNotFoundException e) {
+	        e.printStackTrace();
+	    }
+	    return count;
+	}
 	
 }

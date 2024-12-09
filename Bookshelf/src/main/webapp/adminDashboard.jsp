@@ -19,7 +19,7 @@
             <a href="UserManager" class="nav-link">Users</a>
             <a href="books.jsp" class="nav-link">Libraries</a>
             <a href="PullReservationList" class="nav-link">Reservations</a>
-            <a href="books.jsp" class="nav-link">Books</a>
+            <a href="BookInventoryManager" class="nav-link">Books</a>
             <a href="index.jsp" class="nav-link">Logout</a>
         </nav>
     </header>
