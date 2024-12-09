@@ -57,7 +57,7 @@ public class UserRoleDao {
 	            "SELECT ur.user_role_id, ur.user_id, ur.role_id, ur.assigned_date, ur.status, r.role_name " +
 	            "FROM " + ApplicationDao.USER_ROLE_TABLE + " ur " +
 	            "JOIN bookshelf_role r ON ur.role_id = r.role_id " +
-	            "WHERE ur.user_id = ? AND ur.status = 'Active'";
+	            "WHERE ur.user_id = ?";
 	            
 	        PreparedStatement preparedStmt = connection.prepareStatement(find_user_role_sql);
 	        preparedStmt.setString(1, user_id);

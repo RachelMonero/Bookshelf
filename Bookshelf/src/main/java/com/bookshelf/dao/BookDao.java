@@ -154,4 +154,148 @@ public class BookDao {
         }
         return null;
     }
+    
+    public static List<Book> getAllBook(){
+    	List<Book> allBooks = new ArrayList<>();
+    	try (Connection connection = DBConnection.getDBInstance()) {
+            String query = "SELECT * FROM bookshelf_book";
+            PreparedStatement statement = connection.prepareStatement(query);
+            
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next())  {
+                String current_book_id = resultSet.getString("book_id");
+                String title = resultSet.getString("title");
+                String author = resultSet.getString("author");
+                String isbn = resultSet.getString("isbn");
+                int publishedYear = resultSet.getInt("published_year");
+                String genre = resultSet.getString("genre_id");
+                
+
+                Book book = new Book(current_book_id, title, author, isbn, publishedYear,genre);
+                allBooks.add(book);
+                
+            }
+        } catch (SQLException e) {
+            DBUtil.processException(e);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    	return allBooks;
+    }
+            
+    public static boolean deleteBookById(String book_id) {
+    	boolean result = false;
+        try (Connection connection = DBConnection.getDBInstance()) {
+            String query = "DELETE FROM bookshelf_book WHERE book_id = ?";
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setString(1, book_id);
+
+            int rowsAffected = statement.executeUpdate();
+            if (rowsAffected > 0) {
+            	result = true;
+                System.out.println("Book has been deleted successfully.");
+
+                
+            } else {
+                result=false;
+            }
+        } catch (SQLException e) {
+            DBUtil.processException(e);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+    
+    
+    public static boolean updateBookById(String book_id, String title, String author, String isbn, int publishedYear, int genre_id) {
+    	
+    	boolean result = false;
+    	
+    	try (Connection connection = DBConnection.getDBInstance()) {        	
+        	
+            String query = "UPDATE bookshelf_book SET title = ?, author = ?, isbn = ?, published_year = ?, genre_id = ? WHERE book_id = ?";
+            PreparedStatement statement = connection.prepareStatement(query);
+
+            statement.setString(1, title);
+            statement.setString(2, author);
+            statement.setString(3, isbn);
+            statement.setInt(4, publishedYear);
+            statement.setInt(5, genre_id);
+            statement.setString(6, book_id);
+
+            int rowsUpdated = statement.executeUpdate();
+            if (rowsUpdated > 0) {
+                System.out.println("Book has been updated successfully.");
+                result= true;
+            } else {
+                System.out.println("No book found.");
+                
+            }
+        } catch (SQLException e) {
+            DBUtil.processException(e);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+    
+    public static boolean isBookExist(String title, String author, int publishedYear) {
+        boolean exists = false;
+
+        try (Connection connection = DBConnection.getDBInstance()) {
+            String query = "SELECT COUNT(*) AS count FROM bookshelf_book WHERE title = ? AND author = ? AND published_year = ?";
+            PreparedStatement statement = connection.prepareStatement(query);
+
+            statement.setString(1, title);
+            statement.setString(2, author);
+            statement.setInt(3, publishedYear);
+
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                int count = resultSet.getInt("count");
+                exists = count > 0;
+            }
+        } catch (SQLException e) {
+            DBUtil.processException(e);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return exists;
+    }
+    
+    public static boolean createBook(String book_id, String title, String author, String isbn, int publishedYear, int genre_id) {
+        boolean result = false;
+
+        try (Connection connection = DBConnection.getDBInstance()) {
+
+            String query = "INSERT INTO bookshelf_book (book_id, title, author, isbn, published_year, genre_id) VALUES (?, ?, ?, ?, ?, ?)";
+            PreparedStatement statement = connection.prepareStatement(query);
+
+            statement.setString(1, book_id);
+            statement.setString(2, title);
+            statement.setString(3, author);
+            statement.setString(4, isbn);
+            statement.setInt(5, publishedYear);
+            statement.setInt(6, genre_id);
+
+            // Execute the query
+            int rowsInserted = statement.executeUpdate();
+            if (rowsInserted > 0) {
+                System.out.println("Book has been added successfully.");
+                result = true;
+            } else {
+                System.out.println("Failed to add the book.");
+            }
+        } catch (SQLException e) {
+            DBUtil.processException(e);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return result;
+    }
+
+    
 }
