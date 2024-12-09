@@ -14,7 +14,8 @@ public class BookDto {
     private String library_name;
     
     public BookDto(String library_book_id, String title, String author, String isbn, int publishedYear, String genre, String availability, String library_name) {
-        this.library_book_id = library_book_id;
+        
+    	this.library_book_id = library_book_id;
         this.title = title;
         this.author = author;
         this.isbn = isbn;
