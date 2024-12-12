@@ -28,6 +28,7 @@ public class VerifyServlet extends HttpServlet {
             boolean is_verified = UserDao.verifyUserByToken(verification_code);
             if (is_verified) {
                 request.setAttribute("message", "Email verified successfully! You can now log in.");
+
             } else {
                 request.setAttribute("message", "Invalid or expired verification link.");
             }

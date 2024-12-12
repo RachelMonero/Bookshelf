@@ -22,7 +22,7 @@ public class editBookServlet extends HttpServlet {
 
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// compare input and previous value and save.
+		// compare input values with the previous values and save.
 	
 		String current_book_id = request.getParameter("book_id");
 
@@ -40,6 +40,7 @@ public class editBookServlet extends HttpServlet {
 		int edit_published_year = Integer.parseInt(request.getParameter("published_year"));
 		int edit_genre = Integer.parseInt(request.getParameter("genre"));
 		
+		// if any changes have detected, set it as a main value.
 	    if (title != edit_title) {
 	    	title =  edit_title;	    	
 	    }
@@ -56,6 +57,7 @@ public class editBookServlet extends HttpServlet {
 			genre = edit_genre;
 		}
 		
+		// update the book record with new value.
 	    boolean is_updated =  BookDao.updateBookById(current_book_id, title, author, isbn, published_year, genre);
 			  
 	    if (is_updated) {

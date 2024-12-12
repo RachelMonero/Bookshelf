@@ -82,6 +82,7 @@ public class UserManagerServlet extends HttpServlet {
         		userRoleDto.setRole_name(role_name);
         		userRoleDto.setStatus(status);
         		
+        		// map all retrieved records into userManagerDto.
         		userManagerDto.setUserRole(userRoleDto);   		        		
         		
 
