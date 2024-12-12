@@ -1,13 +1,17 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List" %>
 <%@ page import="com.bookshelf.beans.ReservationsHistory" %>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your Reservation History</title>
-    <style>
+    <link rel="stylesheet" href="css/dashboard.css">
+<style>
         table {
             border-collapse: collapse;
-            width: 100%;
+            width: 99%;
             margin-top: 20px;
         }
         th, td {
@@ -30,7 +34,7 @@
         button:hover {
             background-color: darkred;
         }
-    </style>
+    </style> 
     <script>
         // Confirmation pop-up for canceling a reservation
         function confirmCancellation(reservationId) {
@@ -40,7 +44,17 @@
         }
     </script>
 </head>
-<body>
+<body class="background">
+
+    <!-- Navbar -->
+    <header class="navbar">
+        <h1 class="navbar-title">Bookshelf</h1>
+       
+        <!-- Embedded Nav_bar -->
+        <%@include file="mem_navBar.jsp" %>
+        
+    </header>
+    
     <h1>Your Reservation History</h1>
     <%
         // Retrieve the reservations list from the request
