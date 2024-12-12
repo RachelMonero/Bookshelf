@@ -22,7 +22,7 @@ public class editUserServlet extends HttpServlet {
     }
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
+        // retrieve previous values and input values of the user.
 		String current_user_id = request.getParameter("user_id");
 		String edit_is_verified = request.getParameter("is_verified");
 	    String edit_role_name = request.getParameter("role_name");
@@ -32,10 +32,11 @@ public class editUserServlet extends HttpServlet {
 	    String pre_role_name = request.getParameter("pre_role_name");
 	    String pre_status = request.getParameter("pre_status");
 
-
+        // find role_id by role_name.
 	    String role_id = RoleDao.findRoleIdByName(edit_role_name);
 	    Boolean success_edit =false;
-
+	    
+        // compare two values to distinguish changes. If changes are detected, update user record with new value.
 	    if(edit_is_verified != pre_is_verified) {
 	    	boolean has_updated =  UserDao.updateIsVerified(current_user_id, edit_is_verified);
 

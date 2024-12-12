@@ -21,7 +21,7 @@ public class AddBookInventoryServlet extends HttpServlet {
     }
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-// get new book info to create book.
+    // get new book info to create book.
 		
 		String title = request.getParameter("title");
 		String author = request.getParameter("author");
@@ -31,14 +31,15 @@ public class AddBookInventoryServlet extends HttpServlet {
 		String genre_string = request.getParameter("genre");
 		int genre = Integer.parseInt(genre_string);
 		
-		
+		// check if book exists
 		boolean exist = BookDao.isBookExist(title, author, published_year);
 		
 		if(exist) {
 			request.setAttribute("error", "Book already exists in inventory");
 		    request.getRequestDispatcher("BookInventoryManager").forward(request, response);
 		    return;
-		} 
+		}
+		// generate book_id and create a new book
 		String book_id = UUIDGenerator.generateUUID();
 		boolean result = BookDao.createBook(book_id, title, author, isbn, published_year, genre);
 			

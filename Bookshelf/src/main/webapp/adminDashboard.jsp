@@ -14,14 +14,10 @@
     <!-- Navbar -->
     <header class="navbar">
         <h1 class="navbar-title">Bookshelf</h1>
-        <nav>
-            <a href="adminDashboard.jsp" class="nav-link">Home</a>
-            <a href="UserManager" class="nav-link">Users</a>
-            <a href="books.jsp" class="nav-link">Libraries</a>
-            <a href="PullReservationList" class="nav-link">Reservations</a>
-            <a href="BookInventoryManager" class="nav-link">Books</a>
-            <a href="index.jsp" class="nav-link">Logout</a>
-        </nav>
+        
+        <!-- Embedded Nav_bar -->
+        <%@include file="admin_navBar.jsp" %>
+        
     </header>
 
     <!-- Search Bar and Filter Section -->

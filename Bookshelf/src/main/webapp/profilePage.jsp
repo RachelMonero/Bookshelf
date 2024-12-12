@@ -13,12 +13,10 @@
     <!-- Navbar -->
     <header class="navbar">
         <h1 class="navbar-title">Bookshelf</h1>
-        <nav>
-            <a href="dashboard.jsp" class="nav-link">Home</a>
-            <a href="profile" class="nav-link">Profile</a>
-            <a href="books.jsp" class="nav-link">Reservations</a>
-            <a href="index.jsp" class="nav-link">Logout</a>
-        </nav>
+        
+        <!-- Embedded Nav_bar -->
+        <%@include file="mem_navBar.jsp" %>
+        
     </header>
 
     <!-- Main Content -->

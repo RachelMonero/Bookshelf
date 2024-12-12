@@ -39,12 +39,13 @@ public class BookInventoryManagerServlet extends HttpServlet {
 	     
 	     try {
 	    	 
-	    	 //get all books
+	    	 //get all books from database
 	    	 List<Book> allBooks = BookDao.getAllBook();
 	    	 
 	    	 if(allBooks != null) {
 	    	  System.out.println("[BookInventroy]: found all books");	 
 	    	  
+	    	  // map each of book information into bookInventoryDto
 	    	  for(Book book: allBooks) {
 	    		  
 	    		  String book_id = book.getBook_id();
@@ -76,10 +77,10 @@ public class BookInventoryManagerServlet extends HttpServlet {
         int num_of_use =  Integer.parseInt(num);
         System.out.println("No:"+num_of_use);
         
-
+        //distinguish the button clicked by end user.
         if (editBook_id != null) {
         	 
-        	// redirect to edit page.
+        	// redirect to editBook page.
         	Book book = BookDao.getBookById(editBook_id);
         	request.setAttribute("book", book);
         	
@@ -88,12 +89,17 @@ public class BookInventoryManagerServlet extends HttpServlet {
         	
         } else if (deleteBook_id != null) {   		
         		
-          try {       	
+          try { 
+        	  // check if the book is in use.
         	   if(num_of_use > 0) {
+        		   
+        		// throw error message in case the book is in use.   
         		request.setAttribute("error", "Failed to delete the book. Book is in use by other libraries.");
         		System.out.println("Can't delete:"+num_of_use);
-        	   } else {
         		
+        	   } else {
+        		       
+        		       // delete book record from database
         		       boolean is_deleted = BookDao.deleteBookById(deleteBook_id);
         		
            		       if(is_deleted) {
