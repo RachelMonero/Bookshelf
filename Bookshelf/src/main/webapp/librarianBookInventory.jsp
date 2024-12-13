@@ -14,15 +14,12 @@
     <!-- Navbar -->
     <header class="navbar">
         <h1 class="navbar-title">Bookshelf</h1>
-        <nav>
-            <a href="libDashboard.jsp" class="nav-link">Home</a>
-            <a href="BookInventoryManager" class="nav-link">Books</a>
-            <a href="reservation" class="nav-link">Reservations</a>
-            <a href="index.jsp" class="nav-link">Logout</a>
-        </nav>
+
+        <!-- Embedded Nav_bar -->
+        <%@include file="lib_navBar.jsp" %>
     </header>
 
-    <h2>Your Library's Book Inventory</h2>
+    <h2>${library_name}'s Book Inventory</h2>
     <c:if test="${not empty error}">
         <p class="error">${error}</p>
     </c:if>
@@ -91,10 +88,11 @@
                     <td>${bookInventoryDto.genre_name}</td>
                     <td>${bookInventoryDto.num_location > 0 ? 'Available' : 'Not Available'}</td>
                     <td>
-                        <form action="BookInventoryManager" method="POST" style="display:inline;">
+                        <form action="LibBookInventoryManager" method="POST" style="display:inline;">
                             <input type="hidden" name="num_of_use" value="${bookInventoryDto.num_location}" />
-                            <button type="submit" name="edit" value="${bookInventoryDto.book.book_id}">Edit</button>
-                            <button type="submit" name="delete" value="${bookInventoryDto.book.book_id}">Delete</button>
+                            <button type="submit" name="lib_edit_in" value="${bookInventoryDto.book.book_id}">Check In</button>
+                            <button type="submit" name="lib_edit_out" value="${bookInventoryDto.book.book_id}">Check out</button>
+                            <button type="submit" name="lib_delete" value="${bookInventoryDto.book.book_id}">Delete</button>
                         </form>
                     </td>
                 </tr>

@@ -4,6 +4,7 @@ import com.bookshelf.beans.Book;
 import com.bookshelf.dao.BookDao;
 import com.bookshelf.dao.GenreDao;
 import com.bookshelf.dao.LibraryBookDao;
+import com.bookshelf.dao.ReservationDao;
 import com.bookshelf.dtos.BookInventoryDto;
 
 import javax.servlet.ServletException;
@@ -35,14 +36,13 @@ public class BookInventoryManagerServlet extends HttpServlet {
 
         // Retrieve user role and library ID from session
         String userRole = (String) session.getAttribute("role");
-        String libraryId = (String) session.getAttribute("libraryId");
+
 
         // Debugging: Log session attributes
         System.out.println("Session Attributes:");
         System.out.println("Logged In UserId = " + session.getAttribute("loggedInUserId"));
         System.out.println("User Role = " + userRole);
-        System.out.println("Library ID = " + libraryId);
-
+ 
         List<BookInventoryDto> bookInventoryDtos = new ArrayList<>();
 
         try {
@@ -52,14 +52,8 @@ public class BookInventoryManagerServlet extends HttpServlet {
                 // System Administrator: Retrieve all books
                 books = BookDao.getAllBook();
                 System.out.println("Role identified as sysAdmin. Fetching all books.");
-            } else if ("librarian".equalsIgnoreCase(userRole)) {
-                // Librarian: Retrieve books associated with their library
-                if (libraryId == null) {
-                    throw new ServletException("Library ID is missing for librarian.");
-                }
-                books = LibraryBookDao.getBooksByLibraryId(libraryId);
-                System.out.println("Role identified as librarian. Fetching books for library ID: " + libraryId);
-            } else {
+                
+            }  else {
                 System.out.println("Invalid user role: " + userRole);
                 throw new ServletException("Invalid user role.");
             }
@@ -72,9 +66,7 @@ public class BookInventoryManagerServlet extends HttpServlet {
                     String genre_id = book.getGenre();
                     String genre_name = GenreDao.findGenreNameById(genre_id);
 
-                    int num_location = "librarian".equalsIgnoreCase(userRole) 
-                        ? LibraryBookDao.countBooksInLibrary(book_id, libraryId) 
-                        : LibraryBookDao.countLibByBookId(book_id);
+                    int num_location = LibraryBookDao.countLibByBookId(book_id);
 
                     BookInventoryDto bookInventoryDto = new BookInventoryDto(book, genre_name, num_location);
                     bookInventoryDtos.add(bookInventoryDto);
@@ -90,14 +82,16 @@ public class BookInventoryManagerServlet extends HttpServlet {
         // Forward to the appropriate JSP
         if ("sysAdmin".equalsIgnoreCase(userRole)) {
             request.getRequestDispatcher("adminBookInventory.jsp").forward(request, response);
-        } else if ("librarian".equalsIgnoreCase(userRole)) {
-            request.getRequestDispatcher("librarianBookInventory.jsp").forward(request, response);
         }
     }
     
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String editBookId = request.getParameter("edit");
+    	
+    	HttpSession session = request.getSession(false);
+    	
+        // for admin
+    	String editBookId = request.getParameter("edit");
         String deleteBookId = request.getParameter("delete");
         String numOfUse = request.getParameter("num_of_use");
 
@@ -150,6 +144,7 @@ public class BookInventoryManagerServlet extends HttpServlet {
                 request.setAttribute("error", "An error occurred. Please try again later.");
             }
             response.sendRedirect("BookInventoryManager");
-        }
+            
+        } 
     }
 }

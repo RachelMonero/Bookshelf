@@ -34,6 +34,8 @@ public class LibraryBookDao {
             e.printStackTrace();
         }
     }
+    
+
 
     public static LibraryBook getLibBookById(String library_book_id) {
         try (Connection connection = DBConnection.getDBInstance()) {
@@ -103,6 +105,7 @@ public class LibraryBookDao {
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
+        
     }
     
     public static List<Book> getBooksByLibraryId(String libraryId) {
@@ -132,9 +135,10 @@ public class LibraryBookDao {
     }
 
 
-    public static int countBooksInLibrary(String book_id, String libraryId) {
-        int count = 0;
-        String query = "SELECT COUNT(*) AS book_count FROM bookshelf_library_book " +
+    public static boolean is_libBookInRev(String book_id, String libraryId) {
+        boolean libBook_inUse = false;
+        
+        String query = "SELECT is_available FROM bookshelf_library_book " +
                        "WHERE book_id = ? AND library_id = ?";
         try (Connection connection = DBConnection.getDBInstance();
              PreparedStatement statement = connection.prepareStatement(query)) {
@@ -142,12 +146,12 @@ public class LibraryBookDao {
             statement.setString(2, libraryId);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
-                count = resultSet.getInt("book_count");
+            	libBook_inUse = resultSet.getBoolean("is_available");
             }
         } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
         }
-        return count;
+        return libBook_inUse;
     }
 
     public static boolean linkBookToLibrary(String bookId, String libraryId) {
@@ -167,5 +171,49 @@ public class LibraryBookDao {
         return false;
     }
 
+    public static boolean deleteLibBookById(String library_book_id) {
+        String query = "DELETE FROM bookshelf_library_book WHERE library_book_id = ?";
+        try (Connection connection = DBConnection.getDBInstance();
+             PreparedStatement preparedStmt = connection.prepareStatement(query)) {
+
+            preparedStmt.setString(1, library_book_id);
+
+            int rowsAffected = preparedStmt.executeUpdate();
+
+            // Log the deletion status
+            if (rowsAffected > 0) {
+                System.out.println("Book deleted successfully from library. Book ID: " + library_book_id);
+                return true;
+            } else {
+                System.out.println("No rows affected. Library Book deletion failed for Book ID: " + library_book_id);
+                return false;
+            }
+
+        } catch (SQLException | ClassNotFoundException e) {
+            System.out.println("Error occurred while deleting the book with ID: " + library_book_id);
+            e.printStackTrace();
+        }
+        return false;
+    }
+    
+    public static String getLibBookId(String bookId, String library_id) {
+    	String library_book_id = null;
+        try (Connection connection = DBConnection.getDBInstance()) {
+            String query = "SELECT library_book_id FROM bookshelf_library_book WHERE book_id = ? AND library_id = ?";
+            PreparedStatement preparedStmt = connection.prepareStatement(query);
+            preparedStmt.setString(1, bookId);
+            preparedStmt.setString(2, library_id);
+
+           
+            ResultSet resultSet = preparedStmt.executeQuery();
+            if (resultSet.next()) {
+            	library_book_id = resultSet.getString("library_book_id");
+            }
+        } catch (SQLException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return library_book_id;
+    
+    }
 
 }
