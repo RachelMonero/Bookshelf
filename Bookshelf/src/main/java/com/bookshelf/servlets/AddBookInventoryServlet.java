@@ -46,6 +46,14 @@ public class AddBookInventoryServlet extends HttpServlet {
         int publishedYear = Integer.parseInt(year);
         String genreString = request.getParameter("genre");
         int genre = Integer.parseInt(genreString);
+        
+        String path = "BookInventoryManager";
+        boolean is_librarian = "librarian".equalsIgnoreCase(userRole);
+        boolean is_admin = "admin".equalsIgnoreCase(userRole);
+        
+        if(is_librarian) {
+        	path="LibBookInventoryManager";                
+        }
 
         try {
             // Check if the book already exists
@@ -54,7 +62,7 @@ public class AddBookInventoryServlet extends HttpServlet {
             if (exist) {
                 System.out.println("AddBookInventoryServlet - Book already exists: " + title);
                 request.setAttribute("error", "Book already exists in inventory.");
-                request.getRequestDispatcher("BookInventoryManager").forward(request, response);
+                request.getRequestDispatcher(path).forward(request, response);
                 return;
             }
 
@@ -66,12 +74,12 @@ public class AddBookInventoryServlet extends HttpServlet {
                 System.out.println("AddBookInventoryServlet - Book created successfully.");
 
                 // If the user is a librarian, link the book to their library
-                if ("librarian".equalsIgnoreCase(userRole)) {
+                if (is_librarian) {
+                	
                     if (libraryId == null || libraryId.isEmpty()) {
                         System.out.println("AddBookInventoryServlet - Failed: Library ID is missing for librarian.");
                         request.setAttribute("error", "Cannot add a book. Library ID is missing.");
-                        request.getRequestDispatcher("BookInventoryManager").forward(request, response);
-                        return;
+     
                     }
 
                     boolean linkResult = LibraryBookDao.linkBookToLibrary(bookId, libraryId);
@@ -81,15 +89,16 @@ public class AddBookInventoryServlet extends HttpServlet {
                     } else {
                         System.out.println("AddBookInventoryServlet - Failed to link book to library.");
                         request.setAttribute("error", "Failed to link book to your library.");
-                        request.getRequestDispatcher("BookInventoryManager").forward(request, response);
-                        return;
+
                     }
                 } else {
                     request.setAttribute("message", "Book added successfully.");
+
                 }
             } else {
                 System.out.println("AddBookInventoryServlet - Failed to add book.");
-                request.setAttribute("error", "An error occurred while adding the book.");
+
+                
             }
         } catch (Exception e) {
             System.out.println("AddBookInventoryServlet - Exception occurred.");
@@ -97,7 +106,7 @@ public class AddBookInventoryServlet extends HttpServlet {
             request.setAttribute("error", "An error occurred. Please try again later.");
         }
 
-        // Redirect to the inventory manager
-        response.sendRedirect("BookInventoryManager");
+
+        response.sendRedirect(path);
     }
 }
