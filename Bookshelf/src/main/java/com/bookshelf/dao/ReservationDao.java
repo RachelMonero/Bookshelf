@@ -127,5 +127,32 @@ public class ReservationDao {
 	    }
 	    return rvList;
 	}
+	
+	public static int countReservationsByLibBookId(String library_book_id) {
+		
+	    int rvCount = 0;
+
+	    try (Connection connection = DBConnection.getDBInstance()) {
+	    	
+	        String count_reservations_sql = 
+	            "SELECT COUNT(*) AS reservation_count FROM bookshelf_reservation " +
+	            "WHERE library_book_id = ?";
+
+	        PreparedStatement preparedStmt = connection.prepareStatement(count_reservations_sql);
+	        preparedStmt.setString(1, library_book_id);
+
+	        ResultSet resultSet = preparedStmt.executeQuery();
+
+	        if (resultSet.next()) {
+	            rvCount = resultSet.getInt("reservation_count");
+	        }
+	    } catch (SQLException e) {
+	        DBUtil.processException(e);
+	    } catch (ClassNotFoundException e) {
+	        e.printStackTrace();
+	    }
+
+	    return rvCount;
+	}
 
 }

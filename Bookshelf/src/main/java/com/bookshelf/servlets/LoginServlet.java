@@ -4,6 +4,7 @@ import com.bookshelf.beans.User;
 import com.bookshelf.beans.UserRole;
 import com.bookshelf.dao.UserDao;
 import com.bookshelf.dao.UserRoleDao;
+import com.bookshelf.dao.LibraryDao; // Added to fetch library information
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -46,28 +47,38 @@ public class LoginServlet extends HttpServlet {
                 request.getRequestDispatcher("index.jsp").forward(request, response);
                 return;
             }
-            
+
             UserRole role = UserRoleDao.findUserRoleById(userId);
+
+            // New code: Fetch library ID for librarian role
+            String libraryId = null;
+            if ("librarian".equalsIgnoreCase(role.getRoleName())) {
+                libraryId = LibraryDao.getLibraryId(userId);
+                if (libraryId == null) {
+                    System.out.println("Login failed - No library associated with librarian user: " + userId);
+                    request.setAttribute("message", "No library associated with this user. Contact the administrator.");
+                    request.getRequestDispatcher("index.jsp").forward(request, response);
+                    return;
+                }
+            }
 
             // Start session and set user attributes
             HttpSession session = request.getSession();
-            session.setAttribute("user", user); 
-            session.setAttribute("loggedInUserId", userId); 
-            session.setAttribute("loggedInUser", user.getUsername()); 
+            session.setAttribute("user", user);
+            session.setAttribute("loggedInUserId", userId);
+            session.setAttribute("loggedInUser", user.getUsername());
             session.setAttribute("email", email);
             session.setAttribute("role", role.getRoleName());
+            session.setAttribute("libraryId", libraryId); // New code: Store libraryId in session
 
+            // Debugging: Print session attributes
             System.out.println("Login successful - User ID: " + userId);
             System.out.println("Login successful - Username: " + user.getUsername());
             System.out.println("Login successful - Email: " + email);
             System.out.println("Login successful - Role: " + role.getRoleName());
-
-            // Verify session attributes
-            System.out.println("Session Attributes:");
-            System.out.println("Logged In UserId = " + session.getAttribute("loggedInUserId"));
-            System.out.println("Logged In User = " + session.getAttribute("loggedInUser"));
-            System.out.println("User Email = " + session.getAttribute("email"));
-            System.out.println("User Role = " + session.getAttribute("role"));
+            if (libraryId != null) {
+                System.out.println("Login successful - Library ID: " + libraryId);
+            }
 
             // Redirect to appropriate page based on role
             if ("sysAdmin".equalsIgnoreCase(role.getRoleName())) {
