@@ -16,7 +16,7 @@
         <h1 class="navbar-title">Bookshelf</h1>
         <nav>
             <a href="dashboard.jsp" class="nav-link">Home</a>
-            <a href="books" class="nav-link">Books</a>
+            <a href="BookInventoryManager" class="nav-link">Books</a>
             <a href="reservation" class="nav-link">Reservations</a>
             <a href="index.jsp" class="nav-link">Logout</a>
         </nav>
