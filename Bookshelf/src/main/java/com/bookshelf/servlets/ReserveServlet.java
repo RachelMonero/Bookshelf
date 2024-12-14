@@ -31,6 +31,12 @@ public class ReserveServlet extends HttpServlet {
             return;
         }
         
+        String userRole = (String) session.getAttribute("role");
+        System.out.println("search_userRole:"+userRole);
+        boolean is_librarian = "librarian".equalsIgnoreCase(userRole);
+        boolean is_admin = "sysAdmin".equalsIgnoreCase(userRole);
+        String path = "dashboard.jsp";
+        
         // Retrieve library_book_id
         String current_book_id = request.getParameter("library_book_id") != null ? request.getParameter("library_book_id") : null;
         System.out.println("reserve book:"+ current_book_id);
@@ -40,8 +46,14 @@ public class ReserveServlet extends HttpServlet {
         String current_user_id =  UserDao.findIdByEmail(current_user_email);
         System.out.println("reserve user id:"+ current_user_id);
         
-        
-        
+        // set path
+        if(is_librarian) {
+        	path="libDashboard.jsp";
+        } else if(is_admin) {
+        	path="adminDashboard.jsp";
+        	
+        }
+
         if (current_book_id !=null && current_user_id != null) {
         	String reservation_id = ReservationDao.createReservation(current_user_id, current_book_id);
         	
@@ -60,7 +72,7 @@ public class ReserveServlet extends HttpServlet {
         	
         }
 
-        request.getRequestDispatcher("dashboard.jsp").forward(request, response);
+        request.getRequestDispatcher(path).forward(request, response);
 
 	}
 

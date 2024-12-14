@@ -5,6 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.bookshelf.beans.UserRole;
 import com.bookshelf.connection.DBConnection;
@@ -202,5 +204,33 @@ public class UserRoleDao {
 		    }
 		    return false;
 		}
+		// Get all librarians
+		public static List<String> findAllLibrarian() {
+		    List<String> librarians = new ArrayList<>();
+		    
+		    try (Connection connection = DBConnection.getDBInstance()) {
+		        String find_librarian_sql = 
+		            "SELECT ur.user_id " +
+		            "FROM " + ApplicationDao.USER_ROLE_TABLE + " ur " +
+		            "JOIN bookshelf_role r ON ur.role_id = r.role_id " +
+		            "WHERE r.role_name = 'librarian'";
+		        
+		        PreparedStatement preparedStmt = connection.prepareStatement(find_librarian_sql);
+
+		        ResultSet resultSet = preparedStmt.executeQuery();
+
+		        while (resultSet.next()) {
+		            String user_id = resultSet.getString("user_id");
+		            librarians.add(user_id);
+		        }
+		    } catch (SQLException e) {
+		        DBUtil.processException(e);
+		    } catch (ClassNotFoundException e) {
+		        e.printStackTrace();
+		    }
+
+		    return librarians;
+		}
+
 
 	}

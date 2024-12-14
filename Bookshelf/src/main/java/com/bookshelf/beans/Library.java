@@ -19,7 +19,14 @@ public class Library {
         this.librarian_id = librarian_id;
     }
 
-   
+	public Library(String library_id, String library_name, String library_address_id, String library_email, String library_phone) {
+        this.library_id = library_id;
+        this.library_name = library_name;
+        this.library_address_id = library_address_id;
+        this.library_email = library_email;
+        this.library_phone = library_phone;
+	}
+	
     public String getLibrary_id() {
         return library_id;
     }
