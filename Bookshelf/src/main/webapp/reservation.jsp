@@ -45,9 +45,8 @@
         <div class="card-container">
             <% for (ReservationsHistory reservation : reservations) { %>
                 <div class="book-card">
-                    <h3>Reservation Details</h3>
+                    <h3><strong><%= reservation.getBookTitle() %></strong></h3> <!-- Book Title in Bold -->
                     <p><strong>Reservation ID:</strong> <%= reservation.getReservationId() %></p>
-                    <p><strong>Book Title:</strong> <%= reservation.getBookTitle() %></p>
                     <p><strong>Library Name:</strong> <%= reservation.getLibraryName() %></p>
                     <p><strong>Status:</strong> <%= reservation.getStatus() %></p>
                     <p><strong>Reserved Date:</strong> <%= reservation.getReservedDate() %></p>

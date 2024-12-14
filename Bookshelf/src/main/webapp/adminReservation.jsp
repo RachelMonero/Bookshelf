@@ -31,12 +31,11 @@
             <div class="card-container">
                 <c:forEach var="rvListDto" items="${rvListDtos}">
                     <div class="book-card">
-                        <h3>Reservation Details</h3>
+                        <h3><strong>${rvListDto.book.title}</strong></h3>
                         <p><strong>Reservation ID:</strong> ${rvListDto.reservation.reservation_id}</p>
                         <p><strong>Date:</strong> ${rvListDto.reservation.reserved_date}</p>
                         <p><strong>Status:</strong> ${rvListDto.reservation.status}</p>
                         <p><strong>Username:</strong> ${rvListDto.user.username}</p>
-                        <p><strong>Book:</strong> ${rvListDto.book.title}</p>
                         <p><strong>Author:</strong> ${rvListDto.book.author}</p>
                         <p><strong>ISBN:</strong> ${rvListDto.book.isbn}</p>
                         <p><strong>Library:</strong> ${rvListDto.library_name}</p>
