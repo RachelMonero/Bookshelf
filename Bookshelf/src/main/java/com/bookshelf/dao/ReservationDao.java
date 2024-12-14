@@ -154,5 +154,57 @@ public class ReservationDao {
 
 	    return rvCount;
 	}
+	
+	public static List<Reservation> getReservationsWithDetails(String libraryId) {
+	    List<Reservation> reservations = new ArrayList<>();
+	    String sql = "SELECT r.reservation_id, r.reserved_date, r.status, u.username, b.title AS book_name, b.isbn " +
+	                 "FROM bookshelf_reservation r " +
+	                 "JOIN bookshelf_library_book lb ON r.library_book_id = lb.library_book_id " +
+	                 "JOIN bookshelf_user u ON r.user_id = u.user_id " +
+	                 "JOIN bookshelf_book b ON lb.book_id = b.book_id " +
+	                 "WHERE lb.library_id = ?";
+
+	    try (Connection connection = DBConnection.getDBInstance();
+	         PreparedStatement preparedStmt = connection.prepareStatement(sql)) {
+
+	        preparedStmt.setString(1, libraryId);
+	        ResultSet resultSet = preparedStmt.executeQuery();
+
+	        while (resultSet.next()) {
+	            String reservationId = resultSet.getString("reservation_id");
+	            Timestamp reservedDate = resultSet.getTimestamp("reserved_date");
+	            String status = resultSet.getString("status");
+	            String username = resultSet.getString("username");
+	            String bookName = resultSet.getString("book_name");
+	            String isbn = resultSet.getString("isbn");
+
+	            // Create Reservation object
+	            Reservation reservation = new Reservation(reservationId, reservedDate, username, bookName, isbn, status);
+	            reservations.add(reservation);
+	        }
+	    } catch (SQLException e) {
+	        DBUtil.processException(e);
+	    } catch (ClassNotFoundException e) {
+	        e.printStackTrace();
+	    }
+	    return reservations;
+	}
+	
+	public static boolean markAsPickedUp(String reservationId) {
+	    String sql = "UPDATE bookshelf_reservation SET status = 'picked up' WHERE reservation_id = ?";
+	    try (Connection connection = DBConnection.getDBInstance();
+	         PreparedStatement preparedStmt = connection.prepareStatement(sql)) {
+
+	        preparedStmt.setString(1, reservationId);
+
+	        int rowsUpdated = preparedStmt.executeUpdate();
+	        return rowsUpdated > 0; // Return true if the update was successful
+	    } catch (SQLException e) {
+	        DBUtil.processException(e);
+	    } catch (ClassNotFoundException e) {
+	        e.printStackTrace();
+	    }
+	    return false;
+	}
 
 }
