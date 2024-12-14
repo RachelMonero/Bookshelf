@@ -16,9 +16,12 @@
         <h1 class="navbar-title">Bookshelf</h1>
         <%@include file="lib_navBar.jsp" %> <!-- Embedded Nav_bar -->
     </header>
+    </br>
+    
+    <h2>${library_name}'s Reservations</h2>
 
     <div class="dashboard-container">
-        <h2>${library_name}'s Reservations</h2>
+
 
         <!-- Display Errors -->
         <c:if test="${not empty error}">
@@ -30,11 +33,11 @@
             <div class="card-container">
                 <c:forEach var="reservation" items="${reservations}">
                     <div class="book-card">
-                        <h3>Reservation Details</h3>
+                        <h3> ${reservation.book_name} </h3>
                         <p><strong>Reservation ID:</strong> ${reservation.reservation_id}</p>
                         <p><strong>Date:</strong> ${reservation.reserved_date}</p>
                         <p><strong>Username:</strong> ${reservation.username}</p>
-                        <p><strong>Book Name:</strong> ${reservation.book_name}</p>
+     
                         <p><strong>ISBN:</strong> ${reservation.isbn}</p>
                         <p><strong>Status:</strong> ${reservation.status}</p>
                         <c:if test="${reservation.status == 'reserved'}">

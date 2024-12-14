@@ -24,10 +24,12 @@
         <h1 class="navbar-title">Bookshelf</h1>
         <!-- Embedded Nav_bar -->
         <%@include file="mem_navBar.jsp" %>
-    </header>
+    </header></br>
+    
+    <h2>Your Reservation History</h2>
 
     <div class="dashboard-container">
-        <h1>Your Reservation History</h1>
+
 
         <!-- If no reservations are found -->
         <%
@@ -45,9 +47,8 @@
         <div class="card-container">
             <% for (ReservationsHistory reservation : reservations) { %>
                 <div class="book-card">
-                    <h3>Reservation Details</h3>
+                    <h3><%= reservation.getBookTitle() %></h3>
                     <p><strong>Reservation ID:</strong> <%= reservation.getReservationId() %></p>
-                    <p><strong>Book Title:</strong> <%= reservation.getBookTitle() %></p>
                     <p><strong>Library Name:</strong> <%= reservation.getLibraryName() %></p>
                     <p><strong>Status:</strong> <%= reservation.getStatus() %></p>
                     <p><strong>Reserved Date:</strong> <%= reservation.getReservedDate() %></p>

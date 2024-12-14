@@ -16,10 +16,10 @@
         <h1 class="navbar-title">Bookshelf</h1>
         <!-- Embedded Nav_bar -->
         <%@include file="admin_navBar.jsp" %>
-    </header>
-
-    <div class="dashboard-container">
-        <h2>Reservations</h2>
+    </header></br>
+    
+    <h2>Reservations</h2>
+    <div class="dashboard-container">        
 
         <!-- Display Errors -->
         <c:if test="${not empty error}">
@@ -31,12 +31,11 @@
             <div class="card-container">
                 <c:forEach var="rvListDto" items="${rvListDtos}">
                     <div class="book-card">
-                        <h3>Reservation Details</h3>
+                        <h3> ${rvListDto.book.title}</h3>
                         <p><strong>Reservation ID:</strong> ${rvListDto.reservation.reservation_id}</p>
                         <p><strong>Date:</strong> ${rvListDto.reservation.reserved_date}</p>
                         <p><strong>Status:</strong> ${rvListDto.reservation.status}</p>
                         <p><strong>Username:</strong> ${rvListDto.user.username}</p>
-                        <p><strong>Book:</strong> ${rvListDto.book.title}</p>
                         <p><strong>Author:</strong> ${rvListDto.book.author}</p>
                         <p><strong>ISBN:</strong> ${rvListDto.book.isbn}</p>
                         <p><strong>Library:</strong> ${rvListDto.library_name}</p>
