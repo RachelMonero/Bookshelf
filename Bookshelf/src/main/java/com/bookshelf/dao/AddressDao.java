@@ -47,7 +47,7 @@ public class AddressDao {
 		} return null;
 		
 	}
-	
+	// get address by address_id
 	public static Address findAddressById(String address_id) {
 	    try (Connection connection = DBConnection.getDBInstance()) {
 	        String find_address_sql = "SELECT address, city, province, country, postal_code FROM " 
@@ -76,7 +76,7 @@ public class AddressDao {
 
 	    return null;
 	}
-	
+	// delete address by address_id
 	public static boolean deleteAddressById(String address_id) {
 	    String query = "DELETE FROM " + ApplicationDao.ADDRESS_TABLE + " WHERE address_id = ?";
 

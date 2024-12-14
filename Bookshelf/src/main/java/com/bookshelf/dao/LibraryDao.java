@@ -167,5 +167,53 @@ public class LibraryDao {
 
 	    return false;
 	}
+	// find address_id by library_id
+	public static String getAddress_idByLibraryId(String library_id) {
+		String library_address_id =null;
+		String query = "SELECT library_address_id FROM "+ ApplicationDao.LIBRARY_TABLE + " WHERE library_id = ?";
+		
+		try (Connection connection = DBConnection.getDBInstance()) {
+	            
+	        PreparedStatement preparedStmt = connection.prepareStatement(query);
+	        preparedStmt.setString(1, library_id);
+	       
+	       
+	        ResultSet resultSet = preparedStmt.executeQuery();
+
+	        if (resultSet.next()) {
+
+	            library_address_id = resultSet.getString("library_address_id");
+
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    } catch (ClassNotFoundException e) {
+	        e.printStackTrace();
+	    }
+
+	    return library_address_id;
+	}
+	
+	public static boolean removeLibrarianFromLibrary(String library_id) {
+	    String query = "UPDATE " + ApplicationDao.LIBRARY_TABLE + " SET librarian_id = NULL WHERE library_id = ?";
+
+	    try (Connection connection = DBConnection.getDBInstance();
+	         PreparedStatement preparedStmt = connection.prepareStatement(query)) {
+
+	        preparedStmt.setString(1, library_id);
+
+	        int rowsUpdated = preparedStmt.executeUpdate();
+
+	        return rowsUpdated > 0; 
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    } catch (ClassNotFoundException e) {
+	        e.printStackTrace();
+	    }
+
+	    return false; 
+	}
+
+
 
 }

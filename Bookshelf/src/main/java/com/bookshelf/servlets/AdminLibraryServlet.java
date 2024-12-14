@@ -15,6 +15,9 @@ import javax.servlet.http.HttpServletResponse;
 import com.bookshelf.beans.Library;
 import com.bookshelf.dao.AddressDao;
 import com.bookshelf.dao.AdminDao;
+import com.bookshelf.dao.LibraryDao;
+import com.bookshelf.dao.UserDao;
+import com.bookshelf.dtos.LibraryDisplayDto;
 
 @WebServlet("/AdminLibraryServlet")
 public class AdminLibraryServlet extends HttpServlet {
@@ -27,12 +30,36 @@ public class AdminLibraryServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         List<Library> libraries = AdminDao.getAllLibraries();
+        List<LibraryDisplayDto> libDisplayDtos = new ArrayList<>();
 
         // Debugging: Log the libraries
         System.out.println("Number of libraries fetched: " + (libraries != null ? libraries.size() : 0));
 
         // Pass the library list to the JSP
-        request.setAttribute("libraries", libraries);
+        //request.setAttribute("libraries", libraries);
+        
+        // find librarian username 
+        for(Library library:libraries) {
+        	String librarian_id = library.getLibrarian_id();
+        	System.out.println("Librarian ID:"+ librarian_id);
+        	String librarian_username = null;
+        	System.out.println("Librarian:"+ librarian_username);
+        	if(librarian_id == null) {
+        		librarian_username = "N/A";
+        	} else {
+        		librarian_username = UserDao.findUsernameById(librarian_id);
+        	}
+
+        	// set library to libD
+        	
+        	LibraryDisplayDto libDisplayDto = new LibraryDisplayDto(library,librarian_username);
+        	libDisplayDtos.add(libDisplayDto);
+	
+        }
+        
+        // Pass the library list to the JSP
+        request.setAttribute("libraries", libDisplayDtos);
+        	
 
         // Forward to JSP
         request.getRequestDispatcher("adminLibrary.jsp").forward(request, response);
@@ -74,10 +101,23 @@ public class AdminLibraryServlet extends HttpServlet {
         } else if ("delete".equalsIgnoreCase(action)) {
             // Handle deleting a library
             String libraryId = request.getParameter("libraryId");
+            String library_address_id = LibraryDao.getAddress_idByLibraryId(libraryId);
             try {
                 boolean success = AdminDao.deleteLibrary(libraryId);
                 if (success) {
                     request.setAttribute("message", "Library deleted successfully.");
+                    
+                    if(library_address_id != null) {
+                    	
+                       boolean address_deleted = AddressDao.deleteAddressById(library_address_id);
+                       
+                       if(address_deleted) {
+                    	   System.out.println("[AdminLibraryServlet]: Libarary and its address deleted successfully ");
+                       } else {
+                    	   System.out.println("[AdminLibraryServlet]: Error occurred. Failed deleting library address ( "+library_address_id+"), please delete it manually.");
+                       }
+
+                    }
                 } else {
                     request.setAttribute("message", "Failed to delete library.");
                 }

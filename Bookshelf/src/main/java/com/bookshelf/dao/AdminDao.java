@@ -80,7 +80,7 @@ public class AdminDao {
 	// Method to get all libraries
 	public static List<Library> getAllLibraries() {
 	    List<Library> libraries = new ArrayList<>();
-	    String query = "SELECT l.library_id, l.library_name, l.library_email, l.library_phone, " +
+	    String query = "SELECT l.library_id, l.library_name, l.library_email, l.library_phone,l.librarian_id, " +
 	                   "a.address, a.city, a.province, a.country, a.postal_code " +
 	                   "FROM bookshelf_library l " +
 	                   "JOIN bookshelf_address a ON l.library_address_id = a.address_id";
@@ -99,7 +99,8 @@ public class AdminDao {
 	                rs.getString("library_name"),
 	                fullAddress, 
 	                rs.getString("library_email"),
-	                rs.getString("library_phone")
+	                rs.getString("library_phone"),
+	                rs.getString("librarian_id")
 	            );
 	            libraries.add(library);
 	        }
@@ -112,7 +113,7 @@ public class AdminDao {
 
 	// Method to get the library by its id
 	public static Library getLibraryById(String libraryId) {
-		String query = "SELECT l.library_id, l.library_name, l.library_address_id, l.library_email, l.library_phone " +
+		String query = "SELECT l.library_id, l.library_name, l.library_address_id, l.library_email, l.library_phone, l.librarian_id " +
 	               "FROM bookshelf_library l " +
 	               "WHERE l.library_id = ?";
 
@@ -128,7 +129,8 @@ public class AdminDao {
 	        		    rs.getString("library_name"),
 	        		    rs.getString("library_address_id"),
 	        		    rs.getString("library_email"),
-	        		    rs.getString("library_phone")
+	        		    rs.getString("library_phone"),
+	        		    rs.getString("librarian_id")
 	        		);
 	            return library;
 	        }
