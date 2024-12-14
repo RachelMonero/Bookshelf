@@ -1,8 +1,11 @@
 package com.bookshelf.servlets;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import com.bookshelf.beans.Book;
+import com.bookshelf.dao.BookDao;
+import com.bookshelf.dao.GenreDao;
+import com.bookshelf.dao.LibraryBookDao;
+import com.bookshelf.dao.ReservationDao;
+import com.bookshelf.dtos.BookInventoryDto;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -10,113 +13,138 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
-import com.bookshelf.beans.Book;
-import com.bookshelf.dao.BookDao;
-import com.bookshelf.dao.GenreDao;
-import com.bookshelf.dao.LibraryBookDao;
-import com.bookshelf.dtos.BookInventoryDto;
-
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @WebServlet("/BookInventoryManager")
 public class BookInventoryManagerServlet extends HttpServlet {
-	private static final long serialVersionUID = 1L;
-       
+    private static final long serialVersionUID = 1L;
 
     public BookInventoryManagerServlet() {
         super();
-        
     }
 
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		HttpSession session = request.getSession(false);
-	     if (session == null || session.getAttribute("user") == null) {
-	         response.sendRedirect("index.jsp");
-	         return;
-	     }
-	     
-	     List<BookInventoryDto> bookInventoryDtos =  new ArrayList<>();
-	     
-	     try {
-	    	 
-	    	 //get all books from database
-	    	 List<Book> allBooks = BookDao.getAllBook();
-	    	 
-	    	 if(allBooks != null) {
-	    	  System.out.println("[BookInventroy]: found all books");	 
-	    	  
-	    	  // map each of book information into bookInventoryDto
-	    	  for(Book book: allBooks) {
-	    		  
-	    		  String book_id = book.getBook_id();
-	    		  String genre_id = book.getGenre();
-	    		  String genre_name = GenreDao.findGenreNameById(genre_id);
-	    		  
-	    		  int num_location = LibraryBookDao.countLibByBookId(book_id);
-	    		  
-	    		  BookInventoryDto bookInventroyDto = new BookInventoryDto(book, genre_name, num_location);
-	    		  bookInventoryDtos.add(bookInventroyDto);
-	    		  
-	    	  }
-	    	  request.setAttribute("bookInventoryDtos", bookInventoryDtos);
-	    	 
-	    	 }
-	    	 }catch(Exception e) {
-		            e.printStackTrace();
-		            request.setAttribute("error", "An error occurred. Please try again later.");
-		     }
-		     
-		     request.getRequestDispatcher("adminBookInventory.jsp").forward(request, response);
-		}
-	
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HttpSession session = request.getSession(false);
 
-        String editBook_id = request.getParameter("edit");
-        String deleteBook_id = request.getParameter("delete");
-        String num = request.getParameter("num_of_use");
-        int num_of_use =  Integer.parseInt(num);
-        System.out.println("No:"+num_of_use);
-        
-        //distinguish the button clicked by end user.
-        if (editBook_id != null) {
-        	 
-        	// redirect to editBook page.
-        	Book book = BookDao.getBookById(editBook_id);
-        	request.setAttribute("book", book);
-        	
-        	request.getRequestDispatcher("editBook.jsp").forward(request, response);
-        	
-        	
-        } else if (deleteBook_id != null) {   		
-        		
-          try { 
-        	  // check if the book is in use.
-        	   if(num_of_use > 0) {
-        		   
-        		// throw error message in case the book is in use.   
-        		request.setAttribute("error", "Failed to delete the book. Book is in use by other libraries.");
-        		System.out.println("Can't delete:"+num_of_use);
-        		
-        	   } else {
-        		       
-        		       // delete book record from database
-        		       boolean is_deleted = BookDao.deleteBookById(deleteBook_id);
-        		
-           		       if(is_deleted) {
-        	    	      request.setAttribute("message", "Book has been deleted successfully.");
-        	    	      
-        		       } else {
-        	    	        request.setAttribute("error", "An error occurred. Please try again later.");
-        	           }		
-        	   }        	        	             		
-        	} catch(Exception e) {
-	                e.printStackTrace();
-	                request.setAttribute("error", "An error occurred. Please try again later.");
-	            
-	        } response.sendRedirect("BookInventoryManager");
+        if (session == null || session.getAttribute("user") == null) {
+            response.sendRedirect("index.jsp");
+            return;
         }
 
+        // Retrieve user role and library ID from session
+        String userRole = (String) session.getAttribute("role");
 
-	
-	}
+
+        // Debugging: Log session attributes
+        System.out.println("Session Attributes:");
+        System.out.println("Logged In UserId = " + session.getAttribute("loggedInUserId"));
+        System.out.println("User Role = " + userRole);
+ 
+        List<BookInventoryDto> bookInventoryDtos = new ArrayList<>();
+
+        try {
+            List<Book> books;
+
+            if ("sysAdmin".equalsIgnoreCase(userRole)) {
+                // System Administrator: Retrieve all books
+                books = BookDao.getAllBook();
+                System.out.println("Role identified as sysAdmin. Fetching all books.");
+                
+            }  else {
+                System.out.println("Invalid user role: " + userRole);
+                throw new ServletException("Invalid user role.");
+            }
+
+            if (books != null) {
+                System.out.println("[BookInventory]: Found books for role " + userRole);
+
+                for (Book book : books) {
+                    String book_id = book.getBook_id();
+                    String genre_id = book.getGenre();
+                    String genre_name = GenreDao.findGenreNameById(genre_id);
+
+                    int num_location = LibraryBookDao.countLibByBookId(book_id);
+
+                    BookInventoryDto bookInventoryDto = new BookInventoryDto(book, genre_name, num_location);
+                    bookInventoryDtos.add(bookInventoryDto);
+                }
+
+                request.setAttribute("bookInventoryDtos", bookInventoryDtos);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("error", "An error occurred while fetching books. Please try again later.");
+        }
+
+        // Forward to the appropriate JSP
+        if ("sysAdmin".equalsIgnoreCase(userRole)) {
+            request.getRequestDispatcher("adminBookInventory.jsp").forward(request, response);
+        }
+    }
+    
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    	
+    	HttpSession session = request.getSession(false);
+    	
+        // for admin
+    	String editBookId = request.getParameter("edit");
+        String deleteBookId = request.getParameter("delete");
+        String numOfUse = request.getParameter("num_of_use");
+
+        // Debugging
+        System.out.println("Edit Book ID: " + editBookId);
+        System.out.println("Delete Book ID: " + deleteBookId);
+        System.out.println("Number of Use: " + numOfUse);
+
+        // Distinguish the button clicked by end user.
+        if (editBookId != null) {
+            // Redirect to editBook page.
+            try {
+                Book book = BookDao.getBookById(editBookId);
+                if (book != null) {
+                    request.setAttribute("book", book);
+                    request.getRequestDispatcher("editBook.jsp").forward(request, response);
+                    System.out.println("Redirecting to editBook.jsp for Book ID: " + editBookId);
+                } else {
+                    request.setAttribute("error", "Book not found for editing.");
+                    System.out.println("Book not found for editing. Book ID: " + editBookId);
+                    response.sendRedirect("BookInventoryManager");
+                }
+            } catch (Exception e) {
+                System.out.println("Error occurred while processing edit request for Book ID: " + editBookId);
+                e.printStackTrace();
+                request.setAttribute("error", "An error occurred while editing the book.");
+                response.sendRedirect("BookInventoryManager");
+            }
+        } else if (deleteBookId != null) {
+            try {
+                int numOfUseInt = Integer.parseInt(numOfUse);
+                if (numOfUseInt > 0) {
+                    // If the book is in use, return an error message
+                    request.setAttribute("error", "Cannot delete the book. It is in use by other libraries.");
+                    System.out.println("Book is in use. Cannot delete Book ID: " + deleteBookId);
+                } else {
+                    // Attempt to delete the book
+                    boolean isDeleted = BookDao.deleteBookById(deleteBookId);
+                    if (isDeleted) {
+                        request.setAttribute("message", "Book deleted successfully.");
+                        System.out.println("Book deleted successfully. Book ID: " + deleteBookId);
+                    } else {
+                        request.setAttribute("error", "An error occurred while deleting the book.");
+                        System.out.println("Failed to delete the book. Book ID: " + deleteBookId);
+                    }
+                }
+            } catch (Exception e) {
+                System.out.println("Error occurred while processing delete request for Book ID: " + deleteBookId);
+                e.printStackTrace();
+                request.setAttribute("error", "An error occurred. Please try again later.");
+            }
+            response.sendRedirect("BookInventoryManager");
+            
+        } 
+    }
 }

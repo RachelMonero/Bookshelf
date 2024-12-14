@@ -183,29 +183,30 @@ public class BookDao {
     	return allBooks;
     }
             
-    public static boolean deleteBookById(String book_id) {
-    	boolean result = false;
-        try (Connection connection = DBConnection.getDBInstance()) {
-            String query = "DELETE FROM bookshelf_book WHERE book_id = ?";
-            PreparedStatement statement = connection.prepareStatement(query);
-            statement.setString(1, book_id);
+    public static boolean deleteBookById(String bookId) {
+        String query = "DELETE FROM bookshelf_book WHERE book_id = ?";
+        try (Connection connection = DBConnection.getDBInstance();
+             PreparedStatement preparedStmt = connection.prepareStatement(query)) {
 
-            int rowsAffected = statement.executeUpdate();
+            preparedStmt.setString(1, bookId);
+            int rowsAffected = preparedStmt.executeUpdate();
+
+            // Log the deletion status
             if (rowsAffected > 0) {
-            	result = true;
-                System.out.println("Book has been deleted successfully.");
-
-                
+                System.out.println("Book deleted successfully. Book ID: " + bookId);
+                return true;
             } else {
-                result=false;
+                System.out.println("No rows affected. Book deletion failed for Book ID: " + bookId);
+                return false;
             }
-        } catch (SQLException e) {
-            DBUtil.processException(e);
-        } catch (ClassNotFoundException e) {
+
+        } catch (SQLException | ClassNotFoundException e) {
+            System.out.println("Error occurred while deleting the book with ID: " + bookId);
             e.printStackTrace();
         }
-        return result;
+        return false;
     }
+
     
     
     public static boolean updateBookById(String book_id, String title, String author, String isbn, int publishedYear, int genre_id) {
