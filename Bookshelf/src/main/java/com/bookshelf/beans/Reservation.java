@@ -8,6 +8,9 @@ public class Reservation {
 	private String library_book_id;
 	private Timestamp reserved_date;
 	private String status;
+	private String username; 
+	private String book_name;
+    private String isbn;
 	
 	public Reservation(String reservation_id, String user_id, String library_book_id, Timestamp reserved_date,String status) {
 		super();
@@ -16,6 +19,15 @@ public class Reservation {
 		this.library_book_id = library_book_id;
 		this.reserved_date = reserved_date;
 		this.status = status;
+	}
+	
+	public Reservation(String reservation_id, Timestamp reserved_date, String username, String book_name, String isbn, String status) {
+	    this.reservation_id = reservation_id;
+	    this.reserved_date = reserved_date;
+	    this.username = username;
+	    this.book_name = book_name;
+	    this.isbn = isbn;
+	    this.status = status;
 	}
 	
 	public void setReservation_id(String reservation_id) {
@@ -48,5 +60,24 @@ public class Reservation {
 	public String getStatus() {
 		return status;
 	}
+	public String getUsername() {
+	    return username;
+	}
+	public void setUsername(String username) {
+	    this.username = username;
+	}
+	public String getBook_name() {
+        return book_name;
+    }
+
+    public void setBook_name(String book_name) {
+        this.book_name = book_name;
+    }
+    public String getIsbn() {
+        return isbn;
+    }
+    public void setIsbn(String isbn) {
+        this.isbn = isbn;
+    }
 
 }
