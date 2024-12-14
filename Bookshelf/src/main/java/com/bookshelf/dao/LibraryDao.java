@@ -111,5 +111,61 @@ public class LibraryDao {
 	    return null;
 	}
 
+	public static Library getLibraryById(String libraryId) {
+	    String query = "SELECT l.library_id, l.library_name, l.library_email, l.library_phone, " +
+	                   "a.address, a.city, a.province, a.country, a.postal_code " +
+	                   "FROM bookshelf_library l " +
+	                   "JOIN bookshelf_address a ON l.library_address_id = a.address_id " +
+	                   "WHERE l.library_id = ?";
+
+	    try (Connection connection = DBConnection.getDBInstance();
+	         PreparedStatement stmt = connection.prepareStatement(query)) {
+
+	        stmt.setString(1, libraryId);
+	        ResultSet rs = stmt.executeQuery();
+
+	        if (rs.next()) {
+	            String fullAddress = rs.getString("address") + ", " + rs.getString("city") + ", " +
+	                                 rs.getString("province") + ", " + rs.getString("country") + ", " +
+	                                 rs.getString("postal_code");
+
+	            return new Library(
+	                rs.getString("library_id"),
+	                rs.getString("library_name"),
+	                fullAddress, // Use the full address here
+	                rs.getString("library_email"),
+	                rs.getString("library_phone")
+	            );
+	        }
+	    } catch (SQLException | ClassNotFoundException e) {
+	        e.printStackTrace();
+	    }
+
+	    return null;
+	}
+	
+	// Method to update the library
+	public static boolean updateLibrary(String libraryId, String libraryName, String libraryAddressId, String libraryEmail, String libraryPhone) {
+	    String query = "UPDATE " + ApplicationDao.LIBRARY_TABLE + 
+	                   " SET library_name = ?, library_address_id = ?, library_email = ?, library_phone = ? WHERE library_id = ?";
+
+	    try (Connection connection = DBConnection.getDBInstance();
+	         PreparedStatement preparedStmt = connection.prepareStatement(query)) {
+
+	        preparedStmt.setString(1, libraryName);
+	        preparedStmt.setString(2, libraryAddressId);
+	        preparedStmt.setString(3, libraryEmail);
+	        preparedStmt.setString(4, libraryPhone);
+	        preparedStmt.setString(5, libraryId);
+
+	        int rowsUpdated = preparedStmt.executeUpdate();
+	        return rowsUpdated > 0;
+
+	    } catch (SQLException | ClassNotFoundException e) {
+	        e.printStackTrace();
+	    }
+
+	    return false;
+	}
 
 }

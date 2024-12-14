@@ -98,5 +98,26 @@ public class AddressDao {
 	    return false; 
 	}
 
+	// Updates address
+	public static boolean updateAddress(String addressId, String address, String city, String province, String country, String postalCode) {
+	    String query = "UPDATE bookshelf_address SET address = ?, city = ?, province = ?, country = ?, postal_code = ? WHERE address_id = ?";
 
+	    try (Connection connection = DBConnection.getDBInstance();
+	         PreparedStatement stmt = connection.prepareStatement(query)) {
+
+	        stmt.setString(1, address);
+	        stmt.setString(2, city);
+	        stmt.setString(3, province);
+	        stmt.setString(4, country);
+	        stmt.setString(5, postalCode);
+	        stmt.setString(6, addressId);
+
+	        int rowsUpdated = stmt.executeUpdate();
+	        return rowsUpdated > 0;
+	    } catch (SQLException | ClassNotFoundException e) {
+	        e.printStackTrace();
+	    }
+
+	    return false;
+	}
 }
