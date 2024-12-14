@@ -30,11 +30,10 @@
             <div class="card-container">
                 <c:forEach var="reservation" items="${reservations}">
                     <div class="book-card">
-                        <h3>Reservation Details</h3>
+                        <h3><strong>${reservation.book_name}</strong></h3>
                         <p><strong>Reservation ID:</strong> ${reservation.reservation_id}</p>
                         <p><strong>Date:</strong> ${reservation.reserved_date}</p>
                         <p><strong>Username:</strong> ${reservation.username}</p>
-                        <p><strong>Book Name:</strong> ${reservation.book_name}</p>
                         <p><strong>ISBN:</strong> ${reservation.isbn}</p>
                         <p><strong>Status:</strong> ${reservation.status}</p>
                         <c:if test="${reservation.status == 'reserved'}">
