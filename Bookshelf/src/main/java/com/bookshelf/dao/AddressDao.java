@@ -47,7 +47,7 @@ public class AddressDao {
 		} return null;
 		
 	}
-	
+	// get address by address_id
 	public static Address findAddressById(String address_id) {
 	    try (Connection connection = DBConnection.getDBInstance()) {
 	        String find_address_sql = "SELECT address, city, province, country, postal_code FROM " 
@@ -76,7 +76,7 @@ public class AddressDao {
 
 	    return null;
 	}
-	
+	// delete address by address_id
 	public static boolean deleteAddressById(String address_id) {
 	    String query = "DELETE FROM " + ApplicationDao.ADDRESS_TABLE + " WHERE address_id = ?";
 
@@ -98,5 +98,26 @@ public class AddressDao {
 	    return false; 
 	}
 
+	// Updates address
+	public static boolean updateAddress(String addressId, String address, String city, String province, String country, String postalCode) {
+	    String query = "UPDATE bookshelf_address SET address = ?, city = ?, province = ?, country = ?, postal_code = ? WHERE address_id = ?";
 
+	    try (Connection connection = DBConnection.getDBInstance();
+	         PreparedStatement stmt = connection.prepareStatement(query)) {
+
+	        stmt.setString(1, address);
+	        stmt.setString(2, city);
+	        stmt.setString(3, province);
+	        stmt.setString(4, country);
+	        stmt.setString(5, postalCode);
+	        stmt.setString(6, addressId);
+
+	        int rowsUpdated = stmt.executeUpdate();
+	        return rowsUpdated > 0;
+	    } catch (SQLException | ClassNotFoundException e) {
+	        e.printStackTrace();
+	    }
+
+	    return false;
+	}
 }
