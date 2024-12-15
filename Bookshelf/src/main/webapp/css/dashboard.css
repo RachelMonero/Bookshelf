@@ -239,3 +239,335 @@
     font-weight: bold;
     margin-bottom: 15px;
 }
+
+/* Container for user cards */
+.user-card-container {
+    display: flex;
+    flex-wrap: wrap; 
+    justify-content: center; 
+    gap: 12px; 
+    margin-top: 20px;
+}
+
+/* Individual user card styling */
+.user-card {
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    padding: 12px;
+    width: 250px; 
+    height: 220px; 
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.user-card h3 {
+    margin: 0 0 8px;
+    font-size: 1rem; 
+    text-align: center;
+}
+
+.user-card p {
+    margin: 2px 0;
+    font-size: 0.85rem;
+    text-align: left;
+    color: #555;
+}
+
+.user-card form {
+    text-align: center;
+}
+
+.user-card button {
+    margin: 3px;
+    background-color: black;
+    color: white;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+}
+
+.user-card button.btn-delete {
+    background-color: red;
+}
+
+.user-card button:hover {
+    background-color: #333;
+}
+
+.user-card button.btn-delete:hover {
+    background-color: darkred;
+}
+
+/* Back button styling */
+.btn-back {
+    display: inline-block;
+    background-color: #ccc;
+    color: #333;
+    padding: 6px 10px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 0.8rem;
+    font-weight: bold;
+    margin-left: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-back:hover {
+    background-color: #999;
+    color: #fff;
+}
+
+/* Table Container */
+.table-container {
+    margin: 20px auto; 
+    max-width: 90%; 
+    overflow-x: auto; 
+}
+
+/* Table Styling */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+th, td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: left;
+    font-size: 0.9rem;
+}
+
+th {
+    background-color: #f5f5f5;
+    font-weight: bold;
+    text-align: center;
+}
+
+td {
+    text-align: center;
+}
+
+/* Action Buttons */
+.btn-edit {
+    background-color: black;
+    color: white;
+    padding: 6px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+}
+
+.btn-edit:hover {
+    background-color: #333;
+}
+
+.btn-delete {
+    background-color: red;
+    color: white;
+    padding: 6px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+}
+
+.btn-delete:hover {
+    background-color: darkred;
+}
+
+/* Reset default body margin */
+body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Ensure navbar and content alignment */
+.navbar {
+    margin: 0;
+    padding: 1rem;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.page-title {
+    margin-top: 10px; 
+    text-align: center;
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+/* Form container styling */
+.form-container {
+    margin: 0 auto;
+    padding: 20px;
+    max-width: 500px;
+    background-color: #ffffff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    text-align: left; 
+}
+
+/* Centered Scrollable Library Card Container */
+.library-card-container {
+    max-height: 400px; 
+    overflow-y: auto; 
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin: 20px auto; 
+    width: 90%; 
+    max-width: 800px; 
+    box-sizing: border-box;
+    margin-bottom: 50px; 
+}
+
+
+.library-card {
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 10px;
+    margin: 10px 0;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    font-size: 0.9rem;
+}
+
+.library-card h3 {
+    margin-bottom: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.library-card p {
+    margin: 2px 0;
+    color: #555;
+}
+
+.library-card .btn-edit,
+.library-card .btn-delete {
+    padding: 5px 10px;
+    font-size: 0.8rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.library-card .btn-edit {
+    background-color: black;
+    color: white;
+    margin-right: 5px;
+}
+
+.library-card .btn-delete {
+    background-color: red;
+    color: white;
+}
+
+.library-card .btn-edit:hover {
+    background-color: #333;
+}
+
+.library-card .btn-delete:hover {
+    background-color: darkred;
+}
+/* Centering for Library Management Heading and Content */
+.center-content {
+    text-align: center; 
+    margin: 0 auto; 
+}
+
+/* Center the Library Heading */
+.library-heading {
+    text-align: center; 
+    margin-bottom: 10px;
+}
+
+
+/* Compact Add Library Card */
+.add-library-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    padding: 10px;
+    width: 700px; 
+    margin: 20px auto; 
+    text-align: left;
+}
+
+/* Form container with flexbox */
+.add-library-form {
+    display: flex;
+    flex-wrap: wrap; 
+    justify-content: space-between; 
+    gap: 5px; 
+}
+
+.add-library-form .form-group {
+    width: 48%; 
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 5px; 
+}
+
+.add-library-form label {
+    font-size: 0.75rem; 
+    color: #555;
+    margin-bottom: 2px; 
+}
+
+.add-library-form input,
+.add-library-form select {
+    padding: 3px; 
+    font-size: 0.75rem; 
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    height: 22px; 
+    margin-bottom: 3px; 
+}
+
+/* Full-width button */
+.add-library-card button {
+    display: block;
+    width: 100%;
+    background-color: #000;
+    color: #fff;
+    padding: 6px; 
+    font-size: 0.8rem; 
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 5px; 
+    text-align: center;
+}
+
+.add-library-card button:hover {
+    background-color: #333;
+}
+
+/* Custom style for the title input box */
+.long-input {
+    width: 100%; 
+    max-width: 600px; 
+    padding: 8px; 
+    font-size: 1rem; 
+    box-sizing: border-box; 
+    border: 1px solid #ccc; 
+    border-radius: 4px; 
+    height: 30px; 
+}
+
