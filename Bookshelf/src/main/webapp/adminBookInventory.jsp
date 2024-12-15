@@ -73,7 +73,7 @@
 			            <p><strong>Published:</strong> ${bookInventoryDto.book.publishedYear}</p>
 			            <p><strong>ISBN:</strong> ${bookInventoryDto.book.isbn}</p>
 			            <p><strong>Genre:</strong> ${bookInventoryDto.genre_name}</p>
-			            <p><strong>Available Copies:</strong> ${bookInventoryDto.num_location}</p>
+			            <p><strong>Available:</strong> ${bookInventoryDto.num_location == 1 ? 'Available' : 'Not Available'}</p>
 			            
 			            <!-- Manage Buttons -->
 			            <form action="BookInventoryManager" method="POST" style="text-align: center;">
