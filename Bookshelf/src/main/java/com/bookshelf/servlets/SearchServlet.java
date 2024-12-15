@@ -22,6 +22,12 @@ public class SearchServlet extends HttpServlet {
             response.sendRedirect("index.jsp");
             return;
         }
+        
+        String userRole = (String) session.getAttribute("role");
+        System.out.println("search_userRole:"+userRole);
+        boolean is_librarian = "librarian".equalsIgnoreCase(userRole);
+        boolean is_admin = "sysAdmin".equalsIgnoreCase(userRole);
+        String path = "dashboard.jsp";
 
         // Retrieve search parameters
         String title = request.getParameter("title") != null ? request.getParameter("title").trim() : null;
@@ -52,12 +58,20 @@ public class SearchServlet extends HttpServlet {
             // Set books as a request attribute
             request.setAttribute("books", books);
 
-            // Forward to JSP
-            request.getRequestDispatcher("dashboard.jsp").forward(request, response);
+            // set path
+            if(is_librarian) {
+            	path="libDashboard.jsp";
+            } else if(is_admin) {
+            	path="adminDashboard.jsp";
+            	
+            } 
+            request.getRequestDispatcher(path).forward(request, response);
         } catch (Exception e) {
             e.printStackTrace();
             response.sendRedirect("error.jsp");
         }
+        
+        
     }
 
     @Override

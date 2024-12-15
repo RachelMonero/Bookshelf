@@ -14,12 +14,13 @@
     <!-- Navbar -->
     <header class="navbar">
         <h1 class="navbar-title">Bookshelf</h1>
-
-        <!-- Embedded Nav_bar -->
         <%@include file="lib_navBar.jsp" %>
     </header>
 
-    <h2>${library_name}'s Book Inventory</h2>
+    <!-- Page Heading -->
+    <h2 class="library-heading">${library_name}'s Book Inventory</h2>
+    
+    <!-- Error Display -->
     <c:if test="${not empty error}">
         <p class="error">${error}</p>
     </c:if>
@@ -28,15 +29,19 @@
     <form class="add_book" method="POST" action="AddBookInventory">
         <div>
             <div>
-                <input id="title" type="text" placeholder="Enter Book Title" name="title" required />
+                <!-- Long input for Title -->
+                <input id="title" type="text" placeholder="Please Enter Title Here" name="title" class="long-input" required />
             </div>
             <div>
                 <label for="author">Author:</label>
                 <input id="author" type="text" name="author" required />
-                <label for="published_year">Published Year:</label>
-                <input id="published_year" type="number" placeholder="YYYY" name="published_year" required />
+                
+                <label for="published_year">Published:</label>
+                <input id="published_year" type="text" placeholder="YYYY" name="published_year" required />
+                
                 <label for="isbn">ISBN:</label>
                 <input id="isbn" type="text" name="isbn" required />
+                
                 <label for="genre">Genre:</label>
                 <select name="genre" id="genre" class="filter-select" required>
                     <option value="" disabled selected>Select a genre</option>
@@ -61,44 +66,29 @@
         </div>
     </form>
 
-    <br />
+    <br>
 
-    <!-- Book Inventory Table -->
-    <table>
-        <thead>
-            <tr>
-                <th>Book ID</th>
-                <th>Title</th>
-                <th>Author</th>
-                <th>Published Year</th>
-                <th>ISBN</th>
-                <th>Genre</th>
-                <th>Availability</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <c:forEach var="bookInventoryDto" items="${bookInventoryDtos}">
-                <tr>
-                    <td>${bookInventoryDto.book.book_id}</td>
-                    <td>${bookInventoryDto.book.title}</td>
-                    <td>${bookInventoryDto.book.author}</td>
-                    <td>${bookInventoryDto.book.publishedYear}</td>
-                    <td>${bookInventoryDto.book.isbn}</td>
-                    <td>${bookInventoryDto.genre_name}</td>
-                    <td>${bookInventoryDto.num_location > 0 ? 'Available' : 'Not Available'}</td>
-                    <td>
-                        <form action="LibBookInventoryManager" method="POST" style="display:inline;">
-                            <input type="hidden" name="num_of_use" value="${bookInventoryDto.num_location}" />
-                            <button type="submit" name="lib_edit_in" value="${bookInventoryDto.book.book_id}">Check In</button>
-                            <button type="submit" name="lib_edit_out" value="${bookInventoryDto.book.book_id}">Check out</button>
-                            <button type="submit" name="lib_delete" value="${bookInventoryDto.book.book_id}">Delete</button>
-                        </form>
-                    </td>
-                </tr>
-            </c:forEach>
-        </tbody>
-    </table>
+    <!-- Book Inventory Cards -->
+    <div class="dashboard-container">
+        <c:forEach var="bookInventoryDto" items="${bookInventoryDtos}">
+            <div class="book-card">
+                <h3>${bookInventoryDto.book.title}</h3>
+                <p><strong>Author:</strong> ${bookInventoryDto.book.author}</p>
+                <p><strong>Published:</strong> ${bookInventoryDto.book.publishedYear}</p>
+                <p><strong>ISBN:</strong> ${bookInventoryDto.book.isbn}</p>
+                <p><strong>Genre:</strong> ${bookInventoryDto.genre_name}</p>
+                <p><strong>Available Copies:</strong> ${bookInventoryDto.num_location}</p>
+
+                <!-- Manage Buttons -->
+                <form action="LibBookInventoryManager" method="POST" style="text-align: center;">
+                    <input type="hidden" name="num_of_use" value="${bookInventoryDto.num_location}" />
+                    <button type="submit" name="lib_edit_in" class="btn-edit" value="${bookInventoryDto.book.book_id}">Check In</button>
+                    <button type="submit" name="lib_edit_out" class="btn-edit" value="${bookInventoryDto.book.book_id}">Check Out</button>
+                    <button type="submit" name="lib_delete" class="btn-delete" value="${bookInventoryDto.book.book_id}">Delete</button>
+                </form>
+            </div>
+        </c:forEach>
+    </div>
 
     <!-- Footer -->
     <footer class="footer">

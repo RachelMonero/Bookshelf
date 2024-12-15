@@ -408,6 +408,65 @@ public class UserDao {
 	        e.printStackTrace();
 	    }
 	}
+	
+	// find username by id
+    public static String findUsernameById(String user_id) {
+        String username = null;
+        String query = "SELECT username FROM bookshelf_user WHERE user_id = ?";
+
+        try (Connection connection = DBConnection.getDBInstance();
+                PreparedStatement statement = connection.prepareStatement(query)) {
+               statement.setString(1, user_id);
+
+               try (ResultSet rs = statement.executeQuery()) {
+                   if (rs.next()) {
+                       username = rs.getString("username");
+
+                       // Handle null or empty usernames
+                       if (username == null || username.isEmpty()) {
+                           username = "Unknown";
+                       }
+                   } else {
+                       System.out.println("No user found for user_id: " + user_id);
+                       username = "Unknown"; // Default for nonexistent user
+                   }
+               }
+           } catch (SQLException e) {
+               System.err.println("SQL Exception occurred while fetching username for user_id: " + user_id);
+               DBUtil.processException(e);
+           } catch (ClassNotFoundException e) {
+               System.err.println("ClassNotFoundException occurred while fetching username for user_id: " + user_id);
+               e.printStackTrace();
+           }
+
+           return username;
+       }
+    
+ // Find user_id by username
+    public static String findUserIdByUsername(String username) {
+        String user_id = null; 
+        String query = "SELECT user_id FROM bookshelf_user WHERE username = ?";
+
+        try (Connection connection = DBConnection.getDBInstance();
+             PreparedStatement preparedStmt = connection.prepareStatement(query)) {
+
+            preparedStmt.setString(1, username); 
+
+            try (ResultSet resultSet = preparedStmt.executeQuery()) {
+                if (resultSet.next()) {
+                    user_id = resultSet.getString("user_id");
+                } else {
+                    System.out.println("No user found with username: " + username);
+                }
+            }
+        } catch (SQLException e) {
+            DBUtil.processException(e);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return user_id; 
+    }
 
 
 }

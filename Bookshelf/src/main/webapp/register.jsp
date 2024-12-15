@@ -43,19 +43,19 @@
                 <label for="province">Province:</label>
                 <select name="province" id="province" required>
                     <option value="" disabled selected>Province</option>
-                    <option value="NL" <%= "NL".equals(request.getParameter("province")) ? "selected" : "" %>>NL</option>
-                    <option value="PE" <%= "PE".equals(request.getParameter("province")) ? "selected" : "" %>>PE</option>
-                    <option value="NS" <%= "NS".equals(request.getParameter("province")) ? "selected" : "" %>>NS</option>
-                    <option value="NB" <%= "NB".equals(request.getParameter("province")) ? "selected" : "" %>>NB</option>
-                    <option value="QC" <%= "QC".equals(request.getParameter("province")) ? "selected" : "" %>>QC</option>
-                    <option value="ON" <%= "ON".equals(request.getParameter("province")) ? "selected" : "" %>>ON</option>
-                    <option value="MB" <%= "MB".equals(request.getParameter("province")) ? "selected" : "" %>>MB</option>
-                    <option value="SK" <%= "SK".equals(request.getParameter("province")) ? "selected" : "" %>>SK</option>   
-                    <option value="AB" <%= "AB".equals(request.getParameter("province")) ? "selected" : "" %>>AB</option>
-                    <option value="BC" <%= "BC".equals(request.getParameter("province")) ? "selected" : "" %>>BC</option>
-                    <option value="YT" <%= "YT".equals(request.getParameter("province")) ? "selected" : "" %>>YT</option>
-                    <option value="NT" <%= "NT".equals(request.getParameter("province")) ? "selected" : "" %>>NT</option>
-                    <option value="NU" <%= "NU".equals(request.getParameter("province")) ? "selected" : "" %>>NU</option>
+                    <option value="NL" ${address.city == 'NL' ? 'selected' : ''} >NL</option>
+                    <option value="PE" ${address.city == 'PE' ? 'selected' : ''}>PE</option>
+                    <option value="NS" ${address.city == 'NS' ? 'selected' : ''}>NS</option>
+                    <option value="NB" ${address.city == 'NB' ? 'selected' : ''}>NB</option>
+                    <option value="QC" ${address.city == 'QC' ? 'selected' : ''}>QC</option>
+                    <option value="ON" ${address.city == 'ON' ? 'selected' : ''}>ON</option>
+                    <option value="MB" ${address.city == 'MB' ? 'selected' : ''}>MB</option>
+                    <option value="SK" ${address.city == 'SK' ? 'selected' : ''}>SK</option>   
+                    <option value="AB" ${address.city == 'AB' ? 'selected' : ''}>AB</option>
+                    <option value="BC" ${address.city == 'BC' ? 'selected' : ''}>BC</option>
+                    <option value="YT" ${address.city == 'YT' ? 'selected' : ''}>YT</option>
+                    <option value="NT" ${address.city == 'NT' ? 'selected' : ''}>NT</option>
+                    <option value="NU" ${address.city == 'NU' ? 'selected' : ''}>NU</option>
                 </select>
 
                 <label for="country">Country:</label>
