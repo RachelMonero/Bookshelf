@@ -7,95 +7,112 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Library Management</title>
     <link rel="stylesheet" href="css/dashboard.css">
-
+</head>
 <body>
     <!-- Navbar -->
     <header class="navbar">
         <h1 class="navbar-title">Bookshelf</h1>
-        
-        <!-- Embedded Nav_bar -->
         <%@include file="admin_navBar.jsp" %>
-        
     </header>
-    
-    <h1>Library Management</h1>
 
-    <div>
-        ${message}
-    </div>
-    <div>
-      <form action="AdminLibraryServlet" method="post">
-        <h2>Add Library</h2>
-        <label>Library Name: <input type="text" name="libraryName" required></label><br>
-        <label>Library Email: <input type="email" name="libraryEmail" required></label><br>
-        <label>Library Phone: <input type="text" name="libraryPhone" required></label><br>
-        <h3>Address Details</h3>
-        <label>Address: <input type="text" name="address" required></label><br>
-        <label>City: <input type="text" name="city" required></label><br>
-        <label>Province:                 
+    <!-- Main Heading -->
+    <h2 class="library-heading">Library Management</h2>
+
+    <!-- Add Library Card -->
+    <div class="add-library-card">
+        <h3 class="center-content">Add Library</h3>
+        <form action="AdminLibraryServlet" method="post" class="add-library-form">
+            <!-- Library Name -->
+            <div class="form-group">
+                <label for="libraryName">Library Name:</label>
+                <input type="text" id="libraryName" name="libraryName" required>
+            </div>
+            <!-- Library Email -->
+            <div class="form-group">
+                <label for="libraryEmail">Library Email:</label>
+                <input type="email" id="libraryEmail" name="libraryEmail" required>
+            </div>
+            <!-- Library Phone -->
+            <div class="form-group">
+                <label for="libraryPhone">Library Phone:</label>
+                <input type="text" id="libraryPhone" name="libraryPhone" required>
+            </div>
+            <!-- Address -->
+            <div class="form-group">
+                <label for="address">Address:</label>
+                <input type="text" id="address" name="address" required>
+            </div>
+            <!-- City -->
+            <div class="form-group">
+                <label for="city">City:</label>
+                <input type="text" id="city" name="city" required>
+            </div>
+            <!-- Province -->
+            <div class="form-group">
+                <label for="province">Province:</label>
                 <select name="province" id="province" required>
-                    <option value="" disabled selected>Province</option>
-                    <option value="NL" <%= "NL".equals(request.getParameter("province")) ? "selected" : "" %>>NL</option>
-                    <option value="PE" <%= "PE".equals(request.getParameter("province")) ? "selected" : "" %>>PE</option>
-                    <option value="NS" <%= "NS".equals(request.getParameter("province")) ? "selected" : "" %>>NS</option>
-                    <option value="NB" <%= "NB".equals(request.getParameter("province")) ? "selected" : "" %>>NB</option>
-                    <option value="QC" <%= "QC".equals(request.getParameter("province")) ? "selected" : "" %>>QC</option>
-                    <option value="ON" <%= "ON".equals(request.getParameter("province")) ? "selected" : "" %>>ON</option>
-                    <option value="MB" <%= "MB".equals(request.getParameter("province")) ? "selected" : "" %>>MB</option>
-                    <option value="SK" <%= "SK".equals(request.getParameter("province")) ? "selected" : "" %>>SK</option>   
-                    <option value="AB" <%= "AB".equals(request.getParameter("province")) ? "selected" : "" %>>AB</option>
-                    <option value="BC" <%= "BC".equals(request.getParameter("province")) ? "selected" : "" %>>BC</option>
-                    <option value="YT" <%= "YT".equals(request.getParameter("province")) ? "selected" : "" %>>YT</option>
-                    <option value="NT" <%= "NT".equals(request.getParameter("province")) ? "selected" : "" %>>NT</option>
-                    <option value="NU" <%= "NU".equals(request.getParameter("province")) ? "selected" : "" %>>NU</option>
-                </select></label><br>
-        <label>Country: 
+                    <option value="" disabled selected>Select Province</option>
+                    <option value="AB">AB</option>
+                    <option value="BC">BC</option>
+                    <option value="MB">MB</option>
+                    <option value="NB">NB</option>
+                    <option value="NL">NL</option>
+                    <option value="NS">NS</option>
+                    <option value="NT">NT</option>
+                    <option value="NU">NU</option>
+                    <option value="ON">ON</option>
+                    <option value="PE">PE</option>
+                    <option value="QC">QC</option>
+                    <option value="SK">SK</option>
+                    <option value="YT">YT</option>
+                </select>
+            </div>
+            <!-- Country -->
+            <div class="form-group">
+                <label for="country">Country:</label>
                 <select name="country" id="country" required>
                     <option value="CA" selected>Canada</option>
                 </select>
-        </label><br>
-        <label>Postal Code: <input type="text" name="postalCode" required></label><br>
-        <input type="hidden" name="action" value="add">
-        <button type="submit">Add Library</button>
-      </form>
+            </div>
+            <!-- Postal Code -->
+            <div class="form-group">
+                <label for="postalCode">Postal Code:</label>
+                <input type="text" id="postalCode" name="postalCode" required>
+            </div>
+            <!-- Submit Button -->
+            <input type="hidden" name="action" value="add">
+            <button type="submit">Add Library</button>
+        </form>
     </div>
 
-    <h2>Existing Libraries</h2>
-    <table border="1">
-    <thead>
-        <tr>
-            <th>Library ID</th>
-            <th>Name</th>
-            <th>Address</th>
-            <th>Email</th>
-            <th>Phone</th>
-            <th>Librarian</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
+    <!-- Existing Libraries Section -->
+    <h3 class="library-heading">Existing Libraries</h3>
+    <div class="library-card-container">
         <c:forEach var="library" items="${libraries}">
-            <tr>
-                <td>${library.library.library_id}</td>
-                <td>${library.library.library_name}</td>
-                <td>${library.library.library_address_id}</td>
-                <td>${library.library.library_email}</td>
-                <td>${library.library.library_phone}</td>
-                <td>${library.librarian_username}</td>                
-                <td>
-                    <form action="EditLibraryServlet" method="get" style="display:inline;">
-                        <input type="hidden" name="libraryId" value="${library.library.library_id}">
-                        <button type="submit">Edit</button>
-                    </form>
-                    <form action="AdminLibraryServlet" method="post" style="display:inline;">
-                        <input type="hidden" name="action" value="delete">
-                        <input type="hidden" name="libraryId" value="${library.library.library_id}">
-                        <button type="submit">Delete</button>
-                    </form>
-                </td>
-            </tr>
+            <div class="library-card">
+                <h3>${library.library.library_name}</h3>
+                <p><strong>Library ID:</strong> ${library.library.library_id}</p>
+                <p><strong>Address:</strong> ${library.library.library_address_id}</p>
+                <p><strong>Email:</strong> ${library.library.library_email}</p>
+                <p><strong>Phone:</strong> ${library.library.library_phone}</p>
+                <p><strong>Librarian:</strong> ${library.librarian_username}</p>
+                <form action="EditLibraryServlet" method="get" style="display:inline;">
+                    <input type="hidden" name="libraryId" value="${library.library.library_id}">
+                    <button type="submit" class="btn-edit">Edit</button>
+                </form>
+                <form action="AdminLibraryServlet" method="post" style="display:inline;">
+                    <input type="hidden" name="action" value="delete">
+                    <input type="hidden" name="libraryId" value="${library.library.library_id}">
+                    <button type="submit" class="btn-delete">Delete</button>
+                </form>
+            </div>
         </c:forEach>
-    </tbody>
-</table>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2024 Bookshelf Application</p>
+        <p>Created by the Bookshelf Development Team</p>
+    </footer>
 </body>
 </html>

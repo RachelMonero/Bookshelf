@@ -31,7 +31,7 @@
         <form class="add_book" method="POST" action="AddBookInventory">
          <div> 
           <div>
-            <input id="title" type="text" placeholder="Please Enter Title Here" name="title"/>
+            <input id="title" type="text" placeholder="Please Enter Title Here" name="title" class="long-input"/>
           </div>  
           <div>
             <label for="author">Author:</label>
@@ -65,58 +65,26 @@
 
         </form>
         </br>
+			<div class="dashboard-container">
+			    <c:forEach var="bookInventoryDto" items="${bookInventoryDtos}">
+			        <div class="book-card">
+			            <h3>${bookInventoryDto.book.title}</h3>
+			            <p><strong>Author:</strong> ${bookInventoryDto.book.author}</p>
+			            <p><strong>Published:</strong> ${bookInventoryDto.book.publishedYear}</p>
+			            <p><strong>ISBN:</strong> ${bookInventoryDto.book.isbn}</p>
+			            <p><strong>Genre:</strong> ${bookInventoryDto.genre_name}</p>
+			            <p><strong>Available Copies:</strong> ${bookInventoryDto.num_location}</p>
+			            
+			            <!-- Manage Buttons -->
+			            <form action="BookInventoryManager" method="POST" style="text-align: center;">
+			                <input type="hidden" name="num_of_use" value="${bookInventoryDto.num_location}" />
+			                <button type="submit" name="edit" class="btn-edit" value="${bookInventoryDto.book.book_id}">EDIT</button>
+			                <button type="submit" name="delete" class="btn-delete" value="${bookInventoryDto.book.book_id}">DELETE</button>
+			            </form>
+			        </div>
+			    </c:forEach>
+			</div>
 
-        
-
-         <table >
-         <!-- manage button -->
-         
-           <thead>
-             <tr>
-
-                <th>Book ID</th>
-                <th>Title</th>
-                <th>Author</th>
-                <th>Published</th>
-                <th>ISBN</th>
-                <th>Genre</th>
-                <th>Count</th>
-                <th>Manage</th>
-
-
-             </tr>
-           </thead>
-         <tbody>
-            <c:forEach var="bookInventoryDto" items="${bookInventoryDtos}">
-                <tr>
-                     
-                    <td>${bookInventoryDto.book.book_id}</td>
-                    <td>${bookInventoryDto.book.title}</td>
-                    <td>${bookInventoryDto.book.author}</td>
-                    <td>${bookInventoryDto.book.publishedYear}</td>
-                    <td>${bookInventoryDto.book.isbn}</td>
-                    <td>${bookInventoryDto.genre_name}</td>
-                    <td>${bookInventoryDto.num_location}</td>
-                    <td>   
-                       <form action="BookInventoryManager" method="POST"> 
-                            
-                          <input id="num_of_use" type="hidden" name="num_of_use" value="${bookInventoryDto.num_location}" />
-                         
-                          <button type="submit" name="edit" id="edit"  value="${bookInventoryDto.book.book_id}">EDIT</button> 
-                          <button type="submit" name="delete" id="delete"  value="${bookInventoryDto.book.book_id}">DELETE</button>   
-                        </form>
-                    </td>                         
-   
-                </tr>
-
-  
-            </c:forEach>
-         </tbody>
-         </form >
-       </table>
- 
-
-    
 
     <!-- Footer -->
     <footer class="footer">

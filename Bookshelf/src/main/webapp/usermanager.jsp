@@ -27,51 +27,30 @@
         <p class="error">${error}</p>
         </c:if>
 
-         <table >
          <!-- manage button -->
-         
-           <thead>
-             <tr>
-
-                <th>Username</th>
-                <th>Email</th>
-                <th>First Name</th>
-                <th>Last Name</th>
-                <th>Address</th>
-                <th>Role</th>
-                <th>Status</th>
-                <th>Reservations</th>
-                <th></th>
-
-             </tr>
-           </thead>
          <tbody>
-            <c:forEach var="userManagerDto" items="${userManagerDtos}">
-                <tr>
-
-                    <td>${userManagerDto.user.username}</td>
-                    <td>${userManagerDto.user.email}</td>
-                    <td>${userManagerDto.user.first_name}</td>
-                    <td>${userManagerDto.user.last_name}</td>
-                    <td>${userManagerDto.address.address}, ${userManagerDto.address.city}, ${userManagerDto.address.province}, ${userManagerDto.address.country}, ${userManagerDto.address.postal_code}</td>
-                    <td>${userManagerDto.userRole.role_name}</td>
-                    <td>${userManagerDto.userRole.status}</td>
-                    <td>${userManagerDto.totalReservation}</td>
-                    <td>   
-                       <form action="UserManager" method="POST"> 
-
-                         <button type="submit" name="edit" id="edit"  value="${userManagerDto.user.user_id}">EDIT</button>   
-                         <button type="submit" name="delete" id="delete"  value="${userManagerDto.user.user_id}">DELETE</button>  
-                       </form>
-                    </td>   
-                </tr>
-            </c:forEach>
+			<div class="user-card-container">
+			    <c:forEach var="userManagerDto" items="${userManagerDtos}">
+			        <div class="user-card">
+			            <h3>User Information</h3>
+			            <p><strong>Username:</strong> ${userManagerDto.user.username}</p>
+			            <p><strong>Email:</strong> ${userManagerDto.user.email}</p>
+			            <p><strong>Name:</strong> ${userManagerDto.user.first_name} ${userManagerDto.user.last_name}</p>
+			            <p><strong>Address:</strong> ${userManagerDto.address.address}, ${userManagerDto.address.city}, 
+			               ${userManagerDto.address.province}, ${userManagerDto.address.country}, ${userManagerDto.address.postal_code}
+			            </p>
+			            <p><strong>Role:</strong> ${userManagerDto.userRole.role_name}</p>
+			            <p><strong>Status:</strong> ${userManagerDto.userRole.status}</p>
+			            <p><strong>Reservations:</strong> ${userManagerDto.totalReservation}</p>
+			
+			            <form action="UserManager" method="POST">
+			                <button type="submit" name="edit" value="${userManagerDto.user.user_id}">EDIT</button>
+			                <button type="submit" name="delete" value="${userManagerDto.user.user_id}" class="btn-delete">DELETE</button>
+			            </form>
+			        </div>
+			    </c:forEach>
+			</div>
          </tbody>
-         </form >
-       </table>
- 
-
-    
 
     <!-- Footer -->
     <footer class="footer">

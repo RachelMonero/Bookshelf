@@ -27,7 +27,7 @@
     </header>
 
     <div class="dashboard-container">
-        <h1>Your Reservation History</h1>
+        <h2>Your Reservation History</h2>
 
         <!-- If no reservations are found -->
         <%
